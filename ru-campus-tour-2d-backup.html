@@ -1,0 +1,3838 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>রাবি ক্যাম্পাস ট্যুর — RU Campus Tour (real map)</title>
+<style>
+  :root{
+    --ink:#0d1412; --paper:#fdf6e6;
+    --lime:#8ee04a; --leaf:#2f6b3a; --leaf-d:#1d4726;
+    --sun:#ffc44d; --brick:#c4553a; --bus:#1f7fbf;
+    --bn:"Hind Siliguri","Noto Sans Bengali","Kalpurush","SolaimanLipi","Nirmala UI","Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#254a2e}
+  body{font-family:var(--bn);color:var(--ink);user-select:none;touch-action:none}
+  canvas#game{display:block;width:100%;height:100%}
+  .vignette{position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%, transparent 45%, rgba(10,25,15,.40) 100%);
+    mix-blend-mode:multiply}
+
+  /* top bar */
+  #bar{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:10px 12px;pointer-events:none;z-index:20}
+  .brand{display:flex;align-items:center;gap:9px;background:rgba(253,246,230,.94);border-radius:999px;
+    padding:7px 14px 7px 9px;box-shadow:0 6px 18px rgba(0,0,0,.28);backdrop-filter:blur(6px)}
+  .brand .seal{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(160deg,var(--leaf),var(--leaf-d));color:#eafcc9;font-size:13px;font-weight:800;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+  .brand b{font-size:13.5px;white-space:nowrap}
+  .brand span{font-size:10.5px;color:#6b6a5c;display:block;line-height:1;margin-top:2px;letter-spacing:.06em}
+  #compass{display:flex;align-items:center;gap:8px;margin:0 auto;background:rgba(13,20,18,.72);color:#eaf7e6;
+    border-radius:999px;padding:7px 14px 7px 10px;box-shadow:0 6px 18px rgba(0,0,0,.3);
+    border:1px solid rgba(142,224,74,.28);backdrop-filter:blur(6px)}
+  #compass svg{transition:transform .25s ease-out;flex:0 0 auto}
+  #compass .cname{font-size:12.5px;font-weight:600;white-space:nowrap}
+  #compass .cmeta{font-size:10.5px;color:#9fc79a;white-space:nowrap;margin-top:1px}
+
+  /* passport */
+  #passport{position:fixed;right:12px;bottom:12px;z-index:20;background:rgba(253,246,230,.95);
+    border-radius:16px;padding:10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+  #passport .ptitle{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a8368;
+    display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}
+  #passport .ptitle b{color:var(--leaf-d)}
+  #stamps{display:flex;flex-wrap:nowrap;gap:4px}
+  .stamp{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;font-size:12px;
+    background:rgba(0,0,0,.06);border:1.5px dashed rgba(0,0,0,.16);filter:grayscale(1);opacity:.45;
+    transition:transform .18s cubic-bezier(.2,1.6,.4,1)}
+  .stamp.got{filter:none;opacity:1;background:#fff;border:1.5px solid var(--lime);
+    box-shadow:0 2px 8px rgba(110,170,60,.35)}
+  .stamp.pop{transform:scale(1.45) rotate(-6deg)}
+
+  /* hint */
+  #hint{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+    background:rgba(13,20,18,.88);color:#f2ffe9;border:1px solid rgba(142,224,74,.45);
+    padding:9px 16px;border-radius:999px;font-size:13px;z-index:19;box-shadow:0 8px 22px rgba(0,0,0,.35);
+    white-space:nowrap;opacity:0;transition:opacity .18s ease, transform .18s ease;pointer-events:none}
+  #hint.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
+  #hint kbd{background:var(--lime);color:#123;border-radius:6px;padding:1px 7px;font-family:var(--bn);
+    font-weight:800;font-size:12px;margin-right:6px}
+  #hint.bus{border-color:rgba(31,127,191,.85)}
+  #hint.bus kbd{background:#5fc0f0}
+  #hint.rick{border-color:rgba(244,194,107,.85)}
+  #hint.rick kbd{background:#f4c26b}
+
+  #tourBadge{
+    position:fixed;left:50%;top:56px;transform:translateX(-50%) translateY(-6px);
+    display:flex;align-items:center;gap:8px;background:rgba(12,26,20,.9);
+    border:1px solid rgba(95,192,240,.55);color:#ddf1ff;border-radius:999px;
+    padding:7px 15px;font-size:12px;z-index:20;opacity:0;pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;backdrop-filter:blur(6px);
+  }
+  #tourBadge.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  #tourBadge .dot{width:7px;height:7px;border-radius:50%;background:#5fc0f0;
+    box-shadow:0 0 0 0 rgba(95,192,240,.7);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(95,192,240,.6)}70%{box-shadow:0 0 0 9px rgba(95,192,240,0)}100%{box-shadow:0 0 0 0 rgba(95,192,240,0)}}
+
+  /* voice caption bar */
+  #caption{
+    position:fixed;left:50%;bottom:74px;transform:translateX(-50%) translateY(8px);
+    display:flex;align-items:center;gap:10px;max-width:min(760px,90vw);
+    background:rgba(12,26,20,.93);color:#f3ffe9;border:1px solid rgba(142,224,74,.5);
+    border-radius:16px;padding:11px 16px 11px 13px;z-index:19;
+    box-shadow:0 12px 30px rgba(0,0,0,.4);backdrop-filter:blur(8px);
+    opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;
+    font-size:14.5px;line-height:1.55;
+  }
+  #caption.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  #caption .spk{font-size:15px;flex:0 0 auto;opacity:.9}
+  #caption .wave{display:inline-flex;align-items:flex-end;gap:2px;height:15px;flex:0 0 auto}
+  #caption .wave b{display:block;width:3px;border-radius:2px;background:#8ee04a;height:4px}
+  #caption.on .wave b{animation:wv .9s ease-in-out infinite}
+  #caption .wave b:nth-child(2){animation-delay:.15s}
+  #caption .wave b:nth-child(3){animation-delay:.3s}
+  @keyframes wv{0%,100%{height:4px}50%{height:14px}}
+  #caption.quiet .wave{display:none}
+
+  /* overlays */
+  .overlay{position:fixed;inset:0;z-index:40;display:flex;justify-content:center;align-items:flex-start;padding:20px;
+    background:rgba(9,20,12,.5);backdrop-filter:blur(5px);overflow-y:auto;overflow-x:hidden;
+    touch-action:pan-y;-webkit-overflow-scrolling:touch}
+  .overlay.hidden{display:none}
+  .sheet{width:min(580px,100%);max-height:min(88vh,calc(100dvh - 36px));overflow-y:auto;overflow-x:hidden;
+    background:var(--paper);border-radius:22px;padding:26px 26px 22px;margin:auto 0;
+    box-shadow:0 18px 50px rgba(0,0,0,.45);border:1px solid rgba(0,0,0,.08);position:relative;
+    touch-action:pan-y;user-select:text;-webkit-overflow-scrolling:touch;
+    animation:rise .32s cubic-bezier(.2,1.2,.3,1)}
+  .sheet::-webkit-scrollbar{width:7px}
+  .sheet::-webkit-scrollbar-track{background:transparent}
+  .sheet::-webkit-scrollbar-thumb{background:rgba(0,0,0,.25);border-radius:6px}
+  .sheet::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.4)}
+  @keyframes rise{from{transform:translateY(16px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+  .sheet::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;
+    background:linear-gradient(90deg,var(--bus),#7fd0f0,#fdf6e6,var(--lime))}
+  .sheet h1{font-size:29px;margin:6px 0 4px;letter-spacing:-.4px;line-height:1.15}
+  .sheet h1 small{display:block;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:#8a8368;
+    font-weight:600;margin-bottom:8px}
+  .sheet p{font-size:14px;line-height:1.65;color:#3d4436;margin:0 0 12px}
+  .sheet .en{font-size:12.5px;color:#8a8368;font-style:italic}
+  .keys{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 18px}
+  .key{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #e4dcc4;border-radius:10px;
+    padding:6px 11px;font-size:12.5px;color:#4b5142;box-shadow:0 2px 0 #e4dcc4}
+  .key b{font-size:11px;background:#eef7e2;border:1px solid #cfe4b4;border-radius:5px;padding:1px 6px;color:#3c5c27}
+  .btn{display:inline-flex;align-items:center;gap:9px;border:0;cursor:pointer;
+    background:linear-gradient(180deg,#79d13c,#4f9c26);color:#08240a;font-family:var(--bn);font-weight:800;
+    font-size:16px;padding:13px 26px;border-radius:14px;
+    box-shadow:0 5px 0 #356d1a, 0 12px 24px rgba(60,120,30,.3);
+    transition:transform .06s ease, box-shadow .06s ease}
+  .btn:active{transform:translateY(4px);box-shadow:0 1px 0 #356d1a,0 6px 14px rgba(60,120,30,.3)}
+  .btn.bus{background:linear-gradient(180deg,#3fa9e0,#1f7fbf);color:#fff;box-shadow:0 5px 0 #14547f}
+  .cardhead{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+  .cardhead .ic{width:54px;height:54px;flex:0 0 auto;border-radius:16px;display:grid;place-items:center;font-size:26px;
+    background:linear-gradient(160deg,#eef8dd,#d6ecc0);border:1px solid #cfe4b4}
+  .cardhead h2{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.3px}
+  .cardhead .sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8368;margin-top:4px}
+  .fact{background:#fff;border:1px solid #ece3c9;border-radius:14px;padding:14px 16px;font-size:14.5px;
+    line-height:1.7;color:#39402f}
+  .cardfoot{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap}
+  .pill-mini{font-size:11.5px;color:#7d7a63;background:#f2ecd8;border-radius:999px;padding:5px 12px}
+  #win .sheet{text-align:center}
+  #win h1{font-size:31px}
+  .medal{font-size:52px;line-height:1;margin-bottom:6px}
+  .winlist{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:16px 0 20px}
+  .legend{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 18px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5c6350;background:#fff;
+    border:1px solid #e8e0c8;border-radius:9px;padding:5px 9px}
+  .sw{width:14px;height:9px;border-radius:2px;display:inline-block}
+
+  /* touch */
+  #touch{position:fixed;inset:0;pointer-events:none;z-index:18;display:none}
+  #touch.on{display:block}
+  #joy{position:absolute;left:20px;bottom:22px;width:128px;height:128px;border-radius:50%;
+    background:rgba(253,246,230,.16);border:2px solid rgba(253,246,230,.35);pointer-events:auto;backdrop-filter:blur(3px)}
+  #knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+    background:rgba(253,246,230,.85);box-shadow:0 4px 12px rgba(0,0,0,.3);transition:transform .04s linear}
+  #act{position:absolute;right:20px;bottom:34px;width:88px;height:88px;border-radius:50%;pointer-events:auto;
+    background:linear-gradient(180deg,#8ee04a,#4f9c26);color:#0a2a0c;border:0;font-family:var(--bn);font-weight:800;
+    font-size:14px;box-shadow:0 6px 0 #356d1a,0 10px 22px rgba(0,0,0,.3);display:none;place-items:center}
+  #act.on{display:grid}
+  #act.rid{background:linear-gradient(180deg,#3fa9e0,#1f7fbf);color:#fff;box-shadow:0 6px 0 #14547f,0 10px 22px rgba(0,0,0,.3)}
+  #mute{position:fixed;right:12px;top:12px;z-index:21;width:38px;height:38px;border-radius:12px;border:0;
+    background:rgba(253,246,230,.94);font-size:16px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+
+  #zoom{position:fixed;right:12px;bottom:132px;z-index:21;display:flex;flex-direction:column;gap:8px}
+  #zoom button{width:42px;height:42px;border-radius:13px;border:0;background:rgba(253,246,230,.94);
+    color:#2c3a22;font:800 21px/1 system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.28);
+    display:grid;place-items:center;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  #zoom button:active{transform:translateY(2px)}
+
+  @media (max-width:640px){
+    #zoom{bottom:196px}
+    #zoom button{width:36px;height:36px;font-size:18px;border-radius:11px}
+    .brand b{font-size:12px}.brand span{display:none}
+    #compass{padding:6px 11px 6px 8px}#compass .cname{font-size:11.5px}
+    #passport{top:52px;bottom:auto;left:50%;right:auto;transform:translateX(-50%);padding:6px 9px;
+      border-radius:12px;width:max-content;max-width:86vw}
+    #passport .ptitle{margin-bottom:5px;font-size:9px;letter-spacing:.1em;justify-content:center;gap:6px}
+    #stamps{gap:3px}
+    .stamp{width:17px;height:17px;font-size:9.5px;border-radius:5px;border-width:1px}
+    #hint{top:100px;bottom:auto;left:50%;transform:translateX(-50%) scale(.96);font-size:11.5px;
+      padding:7px 13px;max-width:88vw;overflow:hidden;text-overflow:ellipsis}
+    #hint.on{transform:translateX(-50%) scale(1)}
+    #mute{width:34px;height:34px;font-size:14px;border-radius:11px}
+    #act{width:84px;height:84px;bottom:30px}
+    .sheet{padding:22px 20px 18px;border-radius:18px}.sheet h1{font-size:25px}
+  }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div class="vignette"></div>
+
+<div id="bar">
+  <div class="brand">
+    <div class="seal">রাবি</div>
+    <div><b>ক্যাম্পাস ট্যুর</b><span>RU CAMPUS TOUR</span></div>
+  </div>
+  <div id="compass">
+    <svg id="arrow" width="20" height="20" viewBox="0 0 24 24"><path d="M12 2.5 20 20 12 16 4 20Z" fill="#8ee04a"/></svg>
+    <div><div class="cname" id="cnear">—</div><div class="cmeta" id="cdist"></div></div>
+  </div>
+</div>
+
+<button id="mute" title="শব্দ">🔊</button>
+<div id="zoom"><button id="zmap" title="পুরো ম্যাপ দেখো">🗺️</button><button id="zin" title="জুম ইন">+</button><button id="zout" title="জুম আউট">−</button></div>
+<div id="tourBadge"><span class="dot"></span><span id="tourText">গাইডেড ট্যুর · ৭৫৩ একর · নামতে E</span></div>
+
+<div id="passport">
+  <div class="ptitle"><span>ট্যুর পাসপোর্ট</span><b><span id="pcount">০</span> / <span id="ptotal">০</span></b></div>
+  <div id="stamps"></div>
+</div>
+
+<div id="hint"><kbd>E</kbd><span id="hintText">দেখতে চাপো</span></div>
+<div id="caption"><span class="spk">🔊</span><span id="captionText"></span><i class="wave"><b></b><b></b><b></b></i></div>
+
+<div id="touch">
+  <div id="joy"><div id="knob"></div></div>
+  <button id="act">দেখো</button>
+</div>
+
+<div class="overlay" id="start">
+  <div class="sheet">
+    <h1><small>আসল ক্যাম্পাস ম্যাপ · হাঁটো, বাসে ওঠো</small>রাবি ক্যাম্পাস ট্যুর 🚌</h1>
+    <p>তুমি নতুন ছাত্র/ছাত্রী। <b>৭৫৩ একর</b> ক্যাম্পাসে <b><span id="lmtotal">০</span>টি জায়গা</b> খুঁজে বের করো — হেঁটে, রিকশায়, বা মেইন গেটের বাইরের <b>বাস স্ট্যান্ড</b> থেকে <b>রাবির নীল-সাদা বাসে</b> চড়ে। কাছে গিয়ে <b>E</b> চাপলেই পাসপোর্টে সিল পড়বে।</p>
+    <p style="font-size:13px;background:#fff;border:1px solid #ece3c9;border-radius:12px;padding:11px 13px">
+      ⭐ <b>বোনাস:</b> ক্যাম্পাসে ছড়িয়ে আছে <b>৭টি "স্মৃতি"</b> (লাইব্রেরি কার্ড, চায়ের কাপ, আমের আঁটি…)।
+      হেঁটে সেগুলো কুড়াও — সব কুড়োলে <b>শহীদ স্মৃতি সংগ্রহশালার</b> গ্যালারি খুলবে।</p>
+    <p style="font-size:13px;background:#eef7e2;border:1px solid #cfe4b4;border-radius:12px;padding:11px 13px">
+      🔊 <b>বাংলা ভয়েস:</b> প্রতিটা জায়গার তথ্য, আর রিকশাওয়ালার গাইড — লেখার সাথে সাথে <b>বাংলায় শোনা যাবে</b>।
+      (ব্রাউজারে বাংলা ভয়েস ইনস্টল থাকলে; না থাকলে লেখাটা নিচে বড় করে দেখাবে।)</p>
+    <p class="en">Every landmark is pinned to its OpenStreetMap coordinate on the real campus — main gate, library, museum, minar, stadium, pool, mosque, halls, ইবলিশ চত্বর and the railway station.</p>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:#1f7fbf"></span>দোতলা বাস (রিং রোড)</span>
+      <span class="lg"><span class="sw" style="background:#2f7d4a"></span>রিকশা (ধীর, যেখানে খুশি)</span>
+      <span class="lg"><span class="sw" style="background:#c2b08c"></span>ভেতরের রাস্তা</span>
+      <span class="lg"><span class="sw" style="background:#4a4f52"></span>নাটোর রোড</span>
+    </div>
+    <div class="keys">
+      <span class="key"><b>WASD</b>/<b>↑↓←→</b> চলো</span>
+      <span class="key"><b>E</b> দেখো / ওঠো / নামো</span>
+      <span class="key"><b>M</b> শব্দ</span>
+      <span class="key">🖱️ ক্লিক = হেঁটে যাও</span>
+      <span class="key">✋ ড্র্যাগ = ম্যাপ সরাও</span>
+      <span class="key">🔍 হুইল = জুম</span>
+      <span class="key"><b>C</b> ভিউ রিসেট</span>
+      <span class="key">🛺 রিকশায় উঠলে <b>গাইড</b> বাংলায় বলে দেবে কোনটা কী</span>
+      <span class="key">🚌 ৮টি রাবি বাস · 🚉 ক্যাম্পাসের ভেতর দিয়ে ট্রেন</span>
+      <span class="key">🏥 মেডিকেল সেন্টার · 🏊 সুইমিং পুল</span>
+      <span class="key">🔊 বাসে উঠলে ইঞ্জিনের শব্দ · ট্রেন এলে হুইসেল</span>
+      <span class="key">🔍 ডান পাশের <b>+ / −</b> বা <b>পিঞ্চ</b> করে জুম</span>
+      <span class="key">🗺️ ছোট করে জুম আউট করলে পুরো ক্যাম্পাস <b>ম্যাপের মতো</b> — নাম-পিন সহ</span>
+      <span class="key">💞 ইবলিশ চত্বর — পুকুরপাড়ের প্রেম-আড্ডা</span>
+      <span class="key">🚌 মেইন গেটের বাইরে <b>একটাই বাস স্ট্যান্ড</b> — সেখানে সারি সারি <b>২০টি রাবি বাস</b></span>
+      <span class="key">🍛 সীমানার ভেতরে <b>খাবারের গলি</b> — ১৪টা দোকান, চা থেকে বিরিয়ানি</span>
+    </div>
+    <button class="btn" id="startBtn">ট্যুর শুরু করো →</button>
+    <p style="margin:14px 0 0;font-size:11.5px;color:#9a9276">স্ক্রল/পিঞ্চ করে ছোট করলে ক্যাম্পাসটা ম্যাপের মতো সাজানো দেখাবে — 🗺️ বাটনে চাপলেই পুরো ম্যাপ।</p>
+  </div>
+</div>
+
+<div class="overlay hidden" id="card">
+  <div class="sheet">
+    <div class="cardhead">
+      <div class="ic" id="cardIcon">🏛️</div>
+      <div><h2 id="cardName">—</h2><div class="sub" id="cardEn">—</div></div>
+    </div>
+    <div class="fact" id="cardFact">—</div>
+    <div class="cardfoot">
+      <span class="pill-mini" id="cardProg">—</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn ghost" id="cardSpeak" style="padding:10px 14px;font-size:13px">🔊 আবার শোনো</button>
+        <button class="btn" id="cardClose">দেখা হয়ে গেছে ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="win">
+  <div class="sheet">
+    <div class="medal">🎓</div>
+    <h1>পুরো ক্যাম্পাস ঘুরে ফেলেছ!</h1>
+    <p class="en">Tour complete — all 10 landmarks visited.</p>
+    <p id="winStats">—</p>
+    <div class="winlist" id="winList"></div>
+    <button class="btn" id="againBtn">আবার ঘুরবো ↺</button>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+/* ═══════════════════ helpers ═══════════════════ */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const TAU=Math.PI*2;
+let _seed=987654321;
+const rnd=()=>{_seed=(_seed*1664525+1013904223)>>>0;return _seed/4294967296;};
+const rrange=(a,b)=>a+rnd()*(b-a);
+const BN=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+const bn=n=>String(n).replace(/\d/g,d=>BN[+d]);
+function roundRect(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+const FONT=(s,w)=>`${w||600} ${s}px "Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif`;
+
+/* ═══════════════════ world ═══════════════════
+   Everything is placed from OpenStreetMap coordinates of the real campus
+   (bbox 88.622–88.660 E, 24.360–24.378 N) through one linear transform:
+     x = 2600 - (88.6450 - lon) * 93000       (east → right)
+     y =  223 + (24.37400 - lat) * 101900     (north → up)
+   Landmarks you can check against Google Maps: মেইন গেট 24.3662/88.6375,
+   কেন্দ্রীয় গ্রন্থাগার 24.3689/88.6369, শহীদ মিনার 24.3685/88.6398,
+   স্টেডিয়াম 24.3707/88.6410, সুইমিং পুল 24.3701/88.6434,
+   মেডিকেল সেন্টার 24.3692/88.6442, সেনেট ভবন 24.3674/88.6370,
+   কেন্দ্রীয় মসজিদ 24.3671/88.6393, ইবলিশ পুকুর 24.3681/88.6335,
+   মাদার বখশ হল 24.3733/88.6421, স্টেশন 24.3755/88.6432.
+*/
+const W=2600, H=1900;      // the strip south of Natore Road is the bus stand + food stalls
+const S=2.45;                        // map-image px → world units
+const mx=ix=>(ix-30)*S, my=iy=>(iy-20)*S;
+
+/* ── roads ── */
+const ROADS=[
+  // ring road — south boundary road, west boundary, Hall Road, east boundary
+  {x:150,y:1200,w:2338,h:76,t:'main'},
+  {x:150,y:506,w:2338,h:72,t:'main'},
+  {x:150,y:506,w:76,h:770,t:'main'},
+  {x:2412,y:506,w:76,h:770,t:'main'},
+  // main gate → roundabout → campus core
+  {x:816,y:1276,w:88,h:164,t:'main'},
+  // northern lane from Hall Road up to the railway station
+  {x:1470,y:96,w:80,h:412,t:'lane'},
+  // gate spurs from the ring down to the wall gates
+  {x:196,y:1276,w:72,h:110,t:'lane'},
+  {x:1714,y:1276,w:72,h:110,t:'lane'},
+  // Natore Road (outside the south wall)
+  {x:0,y:1470,w:2600,h:86,t:'natore'},
+  // gate → Natore Road → bus stand apron
+  {x:816,y:1420,w:88,h:460,t:'lane'},
+];
+/* ── plazas ── */
+const PLAZAS=[
+  {x:860,y:1238,r:82,t:'round'},       // roundabout inside the main gate
+  {x:1130,y:960,r:104,t:'minar'},      // Shaheed Minar complex
+  {x:1470,y:250,r:64,t:'rail'},        // rail crossing plaza
+];
+/* ── the one bus stand, south of the gate on Natore Road ──
+   20 bays nose-in facing north, an aisle in front, the gate corridor at x≈860 */
+const TERM={x0:880,y0:1562,x1:2500,y1:1880, aisleY:1612, bayY:1749};
+const BUS_BAYS=[];
+for(let i=0;i<20;i++) BUS_BAYS.push({x:944+i*70, y:TERM.bayY, ang:-Math.PI/2});
+/* ── খাবারের গলি: the food stalls inside the south wall ── */
+const FOOD_NAMES=[['চায়ের দোকান','#c4553a','🍵'],['বিরিয়ানি হাউস','#2f7d4a','🍛'],
+  ['ফুচকা','#c98a2e','🥘'],['রুটি-ডাল','#8a5a3a','🫓'],['বার্গার পয়েন্ট','#b8543a','🍔'],
+  ['মিষ্টি ঘর','#a9553c','🍮'],['চটপটি','#2f8a6a','🥗'],['কাবাব কর্নার','#8e4a7a','🍢'],
+  ['সিঙ্গারা','#c08a2e','🥟'],['লুচি-ডাল','#3f6ea8','🍽️'],['জুস কর্নার','#2f6fb0','🥤'],
+  ['আইসক্রিম','#6a4fa0','🍦'],['নুডলস','#c4553a','🍜'],['কফি শপ','#6b4a36','☕']];
+const FOOD_STALLS=[];
+(function(){
+  const left=[1096,1204,1312,1420,1528], right=[1888,1996,2104,2212,2320,2428];
+  left.forEach((x,i)=>FOOD_STALLS.push({x,y:1332,w:96,h:74,n:FOOD_NAMES[i][0],c:FOOD_NAMES[i][1],e:FOOD_NAMES[i][2]}));
+  right.forEach((x,i)=>FOOD_STALLS.push({x,y:1332,w:96,h:74,n:FOOD_NAMES[5+i][0],c:FOOD_NAMES[5+i][1],e:FOOD_NAMES[5+i][2]}));
+  FOOD_STALLS.push({x:1000,y:1332,w:96,h:74,n:FOOD_NAMES[13][0],c:FOOD_NAMES[13][1],e:FOOD_NAMES[13][2]});
+  FOOD_STALLS.push({x:2440,y:1332,w:96,h:74,n:'সিঙ্গারা ২',c:'#c98a2e',e:'🥟'});
+})();
+const FOOD_SPOT={x:1290,y:1300};
+
+/* ── buildings ── x,y,w,h */
+const BLD=[
+  /* placed from OpenStreetMap coordinates of the real campus */
+  /* ───── hall ───── */
+  {x:896,y:332,w:150,h:64,l:'শহীদ হবিবুর রহমান হল',k:'hall'},
+  {x:1145,y:334,w:150,h:64,l:'শহীদ জিয়াউর রহমান হল',k:'hall'},
+  {x:1307,y:382,w:150,h:64,l:'মাদার বখশ হল',k:'hall'},
+  {x:1619,y:389,w:150,h:64,l:'শহীদ সোহরাওয়ার্দী হল',k:'hall'},
+  {x:1784,y:388,w:150,h:64,l:'শহীদ শামসুজ্জোহা হল',k:'hall'},
+  {x:1699,y:683,w:150,h:64,l:'নওয়াব আব্দুল লতিফ হল',k:'hall'},
+  {x:1753,y:766,w:150,h:64,l:'শাহ মখদুম হল',k:'hall'},
+  {x:1974,y:701,w:150,h:64,l:'সৈয়দ আমীর আলী হল',k:'hall'},
+  {x:1392,y:894,w:150,h:64,l:'মতিহার হল',k:'hall'},
+  {x:2069,y:431,w:150,h:64,l:'বরেন্দ্র হল',k:'hall'},
+  {x:1625,y:586,w:150,h:64,l:'রহিম হল',k:'hall'},
+  {x:1911,y:1053,w:150,h:64,l:'শেরে-বাংলা হল',k:'hall'},
+  /* ───── ghall ───── */
+  {x:240,y:607,w:120,h:56,l:'বঙ্গমাতা শেখ ফজিলাতুন্নেছা হল',k:'ghall'},
+  {x:280,y:685,w:120,h:56,l:'বেগম রোকেয়া হল',k:'ghall'},
+  {x:414,y:609,w:120,h:56,l:'নূরজাহান হল',k:'ghall'},
+  {x:418,y:699,w:120,h:56,l:'মন্নুজান হল',k:'ghall'},
+  {x:574,y:651,w:120,h:56,l:'চন্দ্রিমা হল',k:'ghall'},
+  {x:553,y:883,w:120,h:56,l:'রহমতুন্নেসা হল',k:'ghall'},
+  /* ───── gym ───── */
+  {x:1817,y:601,w:112,h:64,l:'জিমনেশিয়াম',k:'gym'},
+  /* ───── library ───── */
+  {x:700,y:896,w:144,h:66,l:'কেন্দ্রীয় গ্রন্থাগার',k:'library'},
+  /* ───── medical ───── */
+  {x:1597,y:872,w:146,h:76,l:'মেডিকেল সেন্টার',k:'medical'},
+  /* ───── mosque ───── */
+  {x:991,y:1072,w:162,h:78,l:'কেন্দ্রীয় জামে মসজিদ',k:'mosque'},
+  /* ───── museum ───── */
+  {x:1186,y:1056,w:150,h:60,l:'শহীদ স্মৃতি সংগ্রহশালা',k:'museum'},
+  /* ───── block ───── */
+  {x:388,y:771,w:118,h:56,l:'সিরাজী কলাভবন',k:'block'},
+  {x:371,y:879,w:118,h:56,l:'মমতাজ উদ্দিন কলাভবন',k:'block'},
+  {x:519,y:962,w:118,h:56,l:'শহীদুল্লাহ কলাভবন',k:'block'},
+  {x:705,y:615,w:118,h:56,l:'চতুর্থ বিজ্ঞান ভবন',k:'block'},
+  {x:863,y:649,w:118,h:56,l:'দ্বিতীয় বিজ্ঞান ভবন',k:'block'},
+  {x:903,y:728,w:118,h:56,l:'তৃতীয় বিজ্ঞান ভবন',k:'block'},
+  {x:870,y:808,w:118,h:56,l:'প্রথম বিজ্ঞান ভবন',k:'block'},
+  {x:886,y:883,w:118,h:56,l:'সৈয়দ নজরুল ইসলাম ভবন',k:'block'},
+  {x:754,y:970,w:118,h:56,l:'শিল্পকলা ভবন',k:'block'},
+  {x:600,y:1030,w:118,h:56,l:'একাডেমিক ভবন',k:'block'},
+  {x:1223,y:891,w:118,h:56,l:'অমৃতলাল ব্যানার্জী',k:'block'},
+  {x:894,y:951,w:118,h:56,l:'প্রশাসন ভবন-২',k:'block'},
+  {x:743,y:1046,w:118,h:56,l:'উপাচার্য ভবন',k:'block'},
+  {x:647,y:1118,w:118,h:56,l:'সিনেট ভবন',k:'block'},
+
+];
+/* ── landmarks (tour) ── */
+const LANDMARKS=[
+  {id:'gate',name:'প্রধান ফটক',en:'Main Gate',icon:'🏛️',x:860,y:1400,r:118,
+   fact:'নাটোর রোড থেকে ক্যাম্পাসে ঢোকার প্রধান প্রবেশপথ। ফটক পেরিয়ে সোজা উত্তরে গেলেই রাউন্ডঅ্যাবাউট, তার পাশেই প্রশাসন ভবন-১।'},
+  {id:'kalja',name:'কাজলা গেট',en:'Kalja Gate',icon:'🚪',x:232,y:1392,r:96,
+   fact:'ক্যাম্পাসের দক্ষিণ-পশ্চিম কোণের গেট। কাজলা ও শহরের পশ্চিম অংশ থেকে আসা শিক্ষার্থীদের সবচেয়ে চেনা রাস্তা।'},
+  {id:'binodpur',name:'বিনোদপুর গেট',en:'Binodpur Gate',icon:'🚪',x:1750,y:1392,r:96,
+   fact:'দক্ষিণ-পূর্ব কোণের গেট, বিনোদপুর বাজারের দিকের প্রবেশপথ। এখান দিয়েই অনেকের সকাল শুরু হয়।'},
+  {id:'admin',name:'প্রশাসন ভবন-১',en:'Administrative Building 1',icon:'🏢',x:698,y:813,r:108,
+   fact:'রাউন্ডঅ্যাবাউটের উত্তর-পশ্চিমে প্রশাসন ভবন-১ — উপাচার্যের দপ্তর। পশ্চিমে উপাচার্য ভবন ও সিনেট ভবন, পূর্বে প্রশাসন ভবন-২।'},
+  {id:'library',name:'কেন্দ্রীয় গ্রন্থাগার',en:'Central Library',icon:'📚',x:772,y:929,r:104,
+   fact:'প্রশাসন ভবন-১-এর দক্ষিণ-পশ্চিমে ক্যাম্পাসের কেন্দ্রস্থলে মনোরম স্থাপত্যের গ্রন্থাগার — প্রায় আড়াই লক্ষ বই আর হাজারো সাময়িকী।'},
+  {id:'minar',name:'কেন্দ্রীয় শহীদ মিনার',en:'Central Shaheed Minar',icon:'🕊️',x:1130,y:960,r:118,
+   fact:'প্রায় চার একর জমির ওপর ষড়ভুজ প্ল্যাটফর্মে ৫৬ ফুট লম্বা চারটি স্তম্ভ। পাশেই উন্মুক্ত মঞ্চ ও শহীদ স্মৃতি সংগ্রহশালা — একুশে ফেব্রুয়ারিতে এখানেই ক্যাম্পাস জেগে ওঠে।'},
+  {id:'museum',name:'শহীদ স্মৃতি সংগ্রহশালা',en:'Shaheed Smriti Sangrahashala',icon:'🏺',x:1261,y:1086,r:96,
+   fact:'শহীদ মিনার কমপ্লেক্সের অংশ — শহীদদের স্মৃতিতে গড়া সংগ্রহশালা, তিনটি গ্যালারিতে সাজানো ইতিহাস। ক্যাম্পাসে ছড়িয়ে থাকা স্মৃতিগুলো কুড়িয়ে এলে গ্যালারির দরজা খোলে।'},
+  {id:'stadium',name:'স্টেডিয়াম',en:'University Stadium',icon:'🏟️',x:1288,y:733,r:128,
+   fact:'ক্যাম্পাসের উত্তর-মধ্যে বিশাল স্টেডিয়াম। সমাবর্তন, ক্রীড়া প্রতিযোগিতা আর বড় আয়োজনে এখানে হাজারো মানুষের ভিড়।'},
+  {id:'mosque',name:'কেন্দ্রীয় জামে মসজিদ',en:'Central Jamia Mosque',icon:'🕌',x:1072,y:1111,r:102,
+   fact:'মেইন গেটের পূর্ব দিকে, শেরে-বাংলা হলের পাশে কেন্দ্রীয় জামে মসজিদ। জুমার দিনে ক্যাম্পাসের সবচেয়ে ব্যস্ত জায়গা।'},
+  {id:'station',name:'রাজশাহী বিশ্ববিদ্যালয় স্টেশন',en:'RU Railway Station',icon:'🚉',x:1560,y:265,r:110,
+   fact:'ক্যাম্পাসের ভেতর দিয়ে চলে যাওয়া রেললাইন — স্টেশনটার নামই "রাজশাহী বিশ্ববিদ্যালয়"। মাদার বখশ হল ঠিক এর পিছনেই, আর স্টেশন প্ল্যাটফর্ম থেকে ক্লাসরুমের দূরত্ব মিনিট দুইয়ের।'},
+  {id:'boddhovumi',name:'বধ্যভূমি স্মৃতিস্তম্ভ',en:'Boddhovumi Memorial',icon:'🕯️',x:2000,y:470,r:124,
+   fact:'১৯৭১ সালের মুক্তিযুদ্ধে পাকবাহিনীর হাতে নিহত শহীদদের স্মরণে গোলাকার কূপের ভেতরে ৪২ ফুট উঁচু স্মৃতিস্তম্ভ — শহীদ শামসুজ্জোহা হলের পাশে, ক্যাম্পাসের পশ্চিম প্রান্তে।'},
+  {id:'paris',name:'প্যারিস রোড',en:'Paris Road',icon:'🌳',x:500,y:1140,r:110,
+   fact:'ক্যাম্পাসের সবচেয়ে সুন্দর সড়ক — দুই পাশে সারি সারি উঁচু গাছ, কাণ্ডে সাদা-লাল রঙ মাখানো, পাশে বাঁধানো বেঞ্চ। ক্লাস ফাঁকি দিয়ে হাঁটা, ছবি তোলা আর আড্ডার রাজপথ।'},
+  {id:'muktamancha',name:'মুক্তমঞ্চ',en:'Open-air Theatre',icon:'🎭',x:1045,y:900,r:100,
+   fact:'স্টেডিয়ামের পাশে খোলা আকাশের নিচের মঞ্চ — সন্ধ্যায় নাটক, কনসার্ট, সাংস্কৃতিক অনুষ্ঠান।'},
+  {id:'medical',name:'মেডিকেল সেন্টার',en:'RU Medical Center',icon:'🏥',x:1670,y:910,r:132,
+   fact:'ক্যাম্পাসের পূর্ব প্রান্তে, বিনোদপুর গেটের কাছে বিশ্ববিদ্যালয়ের মেডিকেল সেন্টার। সাধারণ বিভাগ, প্যাথলজি, এক্স-রে, ইসিজি, চোখ, ডেন্টাল, ক্লিনিক্যাল বায়োকেমিস্ট্রি আর পরিবার পরিকল্পনা ইউনিট — সব একই ছাদের নিচে। দুইটি আধুনিক অ্যাম্বুলেন্স সবসময় প্রস্তুত; দরকার হলে রোগীকে সরাসরি রাজশাহী মেডিকেল কলেজ হাসপাতালেও পাঠানো হয়।'},
+  {id:'pool',name:'সুইমিং পুল',en:'Swimming Pool',icon:'🏊',x:1594,y:795,r:112,
+   fact:'স্টেডিয়ামের ঠিক পূর্ব পাশে জিমনেশিয়ামের গা ঘেঁষে বিশ্ববিদ্যালয়ের সুইমিং পুল। চারটি লেনে নিয়মিত সাঁতারের অনুশীলন হয়, মাঝে মাঝে হয় ওয়াটার ভলি খেলাও। স্টেডিয়ামের উত্তর-পূর্ব কোণে, জিমনেশিয়ামের পাশে ফিনিশড ডেক আর চার লেনের পুল — বিকেল হলেই সাঁতারুদের ভিড়।'},
+  {id:'love',name:'ইবলিশ চত্বর',en:'Iblish Chattar',icon:'💞',x:400,y:1035,r:124,
+   fact:'পুকুরের চারপাশে লোহার গ্রিল, ছায়ায় বাঁধানো পাথরের বেঞ্চ, দুটো হাঁস আর পদ্মভরা জল — ক্যাম্পাসের সবচেয়ে প্রেমময় কোণ। জোড়া হাত ধরে আস্তে আস্তে হাঁটে, কেউ গিটার নিয়ে গান ধরে, কেউ হাঁটু গেড়ে প্রপোজাল দেয়, কেউ শুধু চুপচাপ বসে থাকে। বিকেল গড়িয়ে সন্ধ্যা নামলে এই চত্বরটা যেন আলাদা একটা জগৎ।'},
+  {id:'busstand',name:'রাবি বাস স্ট্যান্ড',en:'RU Bus Stand',icon:'🚌',x:1500,y:1612,r:240,
+   fact:'মেইন গেটের বাইরে নাটোর রোডের ধারে একটাই বাস স্ট্যান্ড — আর সেখানেই সারি সারি দাঁড়িয়ে কুড়িটা নীল-সাদা রাবি বাস। টিকিট কাউন্টার থেকে টিকিট নিয়ে যে কোনো বাসে উঠলেই ক্যাম্পাসের রিং রোড ঘুরে আসা। ছাদে বিশ্রামের শেড, সামনে বেঞ্চ, আর সকাল-বিকেল অপেক্ষারত ছাত্রছাত্রী।'},
+  {id:'foodstreet',name:'খাবারের গলি',en:'Food Street',icon:'🍛',x:1290,y:1300,r:150,
+   fact:'সীমানা দেয়াল ঘেঁষে চৌদ্দটা খাবারের দোকান — চায়ের দোকান, বিরিয়ানি হাউস, ফুচকা, রুটি-ডাল, বার্গার, মিষ্টি ঘর, চটপটি, কাবাব কর্নার, সিঙ্গারা, লুচি-ডাল, জুস কর্নার, আইসক্রিম, নুডলস আর কফি শপ। ক্লাস ফাঁকি দিয়ে চায়ের কাপ হাতে আড্ডা এখানেই জমে; দুপুরে বিরিয়ানির লাইনে পাঁচ মিনিট দাঁড়াতে হয়।'},
+];
+/* ── vehicles: the RU double-decker bus route (ring road) ── */
+const RING_ROUTE=[
+  {x:860,y:1238},{x:600,y:1238},{x:300,y:1238},{x:188,y:1238},
+  {x:188,y:1000},{x:188,y:760},{x:188,y:542},
+  {x:600,y:542},{x:1000,y:542},{x:1400,y:542},{x:1800,y:542},{x:2200,y:542},
+  {x:2450,y:542},{x:2450,y:760},{x:2450,y:1000},{x:2450,y:1238},
+  {x:2100,y:1238},{x:1750,y:1238},{x:1400,y:1238},{x:1100,y:1238}
+];
+/* a bus leaves its bay, rolls up the aisle, out of the gate, round the ring,
+   and parks itself back in the same bay */
+function makeBusRoute(bay){
+  return [
+    {x:bay.x,y:TERM.aisleY},{x:860,y:TERM.aisleY},{x:860,y:1420},{x:860,y:1238},
+    ...RING_ROUTE,
+    {x:860,y:1238},{x:860,y:1420},{x:860,y:TERM.aisleY},
+    {x:bay.x,y:TERM.aisleY},{x:bay.x,y:bay.y}
+  ];
+}
+const BUS_ROUTE=RING_ROUTE;
+const BUS_STOPS=[
+  {x:1500,y:TERM.aisleY-6,n:'রাবি বাস স্ট্যান্ড'}   // one stand, twenty buses
+];
+const RICK_ROUTES=[
+  [{x:860,y:1330},{x:860,y:1238},{x:600,y:1238},{x:300,y:1238},{x:188,y:1238},
+   {x:188,y:1000},{x:188,y:760},{x:188,y:542},{x:600,y:542},{x:1000,y:542},
+   {x:1400,y:542},{x:1800,y:542},{x:2200,y:542},{x:2450,y:542},{x:2450,y:900},
+   {x:2450,y:1238},{x:2100,y:1238},{x:1750,y:1238},{x:1400,y:1238},{x:1100,y:1238},
+   {x:860,y:1238}],
+  [{x:2450,y:542},{x:2450,y:900},{x:2450,y:1238},{x:2100,y:1238},{x:1750,y:1238},
+   {x:1400,y:1238},{x:1100,y:1238},{x:860,y:1238},{x:600,y:1238},{x:300,y:1238},
+   {x:188,y:1238},{x:188,y:900},{x:188,y:542},{x:600,y:542},{x:1000,y:542},
+   {x:1400,y:542},{x:1800,y:542},{x:2200,y:542},{x:2450,y:542}]
+];
+
+/* ═══════════════════ solids ═══════════════════ */
+const SOLIDS=[];
+for(const b of BLD) SOLIDS.push({x:b.x,y:b.y,w:b.w,h:b.h});
+// perimeter wall with gate gaps
+function wallRow(y,h,gaps){ let x=40; for(const g of gaps.sort((a,b)=>a[0]-b[0])){ if(g[0]>x) SOLIDS.push({x,y,w:g[0]-x,h}); x=g[1]; } SOLIDS.push({x,y,w:2540-x,h}); }
+wallRow(1440,18,[[200,320],[790,930],[1690,1810]]);      // south wall
+wallRow(372,18,[[1240,1330],[1440,1560]]);                 // north boundary (gate at the station road)
+SOLIDS.push({x:40,y:300,w:18,h:1140});                     // west wall
+SOLIDS.push({x:2522,y:300,w:18,h:1140});                   // east wall
+// main gate hillock + booths — walk through the IN/OUT gaps
+SOLIDS.push({x:745,y:1376,w:71,h:82});        // gate planter — west half
+SOLIDS.push({x:904,y:1376,w:71,h:82});        // gate planter — east half
+SOLIDS.push({x:668,y:1400,w:42,h:70});        // IN booth
+SOLIDS.push({x:1010,y:1400,w:42,h:70});       // OUT booth
+// station platform + boddhovumi pit
+SOLIDS.push({x:1330,y:196,w:470,h:54});
+SOLIDS.push({x:1514,y:743,w:160,h:104});   // swimming-pool water
+SOLIDS.push({x:330,y:989,w:140,h:92});     // ইবলিশ পুকুর
+SOLIDS.push({x:1958,y:428,w:84,h:84});
+// food stalls + bus-stand furniture (the buses themselves are solid too)
+for(const f of FOOD_STALLS) SOLIDS.push({x:f.x-6,y:f.y-10,w:f.w+12,h:f.h+16});
+SOLIDS.push({x:1150,y:1556,w:470,h:26});      // stand shelter back wall
+SOLIDS.push({x:2380,y:1560,w:120,h:60});      // ticket counter
+// plaza props
+SOLIDS.push({x:1002,y:1149,w:140,h:26});                   // mosque steps
+SOLIDS.push({x:985,y:880,w:120,h:40});                     // muktamancha stage
+
+/* ═══════════════════ prerender ═══════════════════ */
+const bg=document.createElement('canvas'); bg.width=W; bg.height=H;
+const bx=bg.getContext('2d');
+const C={grass:'#6ea45b',road:'#575e61',roadE:'#484f52',lane:'#c2b08c',laneE:'#b2a077',
+         natore:'#4c5255',rail:'#8b8377',path:'#cdbb95'};
+
+function plaque(c,text,cx,y,size){
+  size=(size||13)+2;
+  c.font=FONT(size,700);
+  const w=c.measureText(text).width+22,h=size+13;
+  c.save();
+  c.fillStyle='rgba(253,246,230,.94)';c.strokeStyle='rgba(60,70,40,.22)';c.lineWidth=1;
+  roundRect(c,cx-w/2,y,w,h,7);c.fill();c.stroke();
+  c.fillStyle='#37402c';c.textAlign='center';c.textBaseline='middle';
+  c.fillText(text,cx,y+h/2+1);c.restore();
+}
+
+function paintGrass(){
+  bx.fillStyle=C.grass;bx.fillRect(0,0,W,H);
+  for(let i=0;i<2400;i++){
+    const x=rnd()*W,y=rnd()*H,r=rrange(18,70);
+    bx.fillStyle=rnd()>.5?'rgba(122,177,102,.28)':'rgba(94,146,77,.28)';
+    bx.beginPath();bx.ellipse(x,y,r,r*rrange(.45,.8),rnd()*TAU,0,TAU);bx.fill();
+  }
+  for(let i=0;i<8000;i++){
+    const x=rnd()*W,y=rnd()*H;
+    bx.strokeStyle=rnd()>.5?'rgba(70,120,60,.28)':'rgba(150,200,130,.22)';bx.lineWidth=1;
+    bx.beginPath();bx.moveTo(x,y);bx.lineTo(x+rrange(-2,2),y-rrange(3,7));bx.stroke();
+  }
+}
+function paintRoads(){
+  for(const r of ROADS){
+    const col=r.t==='main'?C.road:r.t==='natore'?C.natore:r.t==='lane'?C.lane:'#7c8a6e';
+    bx.fillStyle=r.t==='main'?C.roadE:r.t==='lane'?C.laneE:col;
+    roundRect(bx,r.x-4,r.y-4,r.w+8,r.h+8,10);bx.fill();
+    bx.fillStyle=col;roundRect(bx,r.x,r.y,r.w,r.h,7);bx.fill();
+  }
+  // lane centre dashes
+  bx.save();bx.strokeStyle='rgba(240,232,200,.5)';bx.lineWidth=3;bx.setLineDash([20,18]);
+  bx.beginPath();bx.moveTo(160,1363);bx.lineTo(2440,1363);bx.stroke();
+  bx.beginPath();bx.moveTo(160,426);bx.lineTo(2440,426);bx.stroke();
+  bx.beginPath();bx.moveTo(188,430);bx.lineTo(188,1360);bx.stroke();
+  bx.beginPath();bx.moveTo(2450,430);bx.lineTo(2450,1360);bx.stroke();
+  bx.beginPath();bx.moveTo(1464,1330);bx.lineTo(1464,1445);bx.stroke();
+  bx.restore();
+  // Natore road markings (outside campus)
+  bx.save();bx.strokeStyle='rgba(255,255,255,.5)';bx.lineWidth=4;bx.setLineDash([28,26]);
+  bx.beginPath();bx.moveTo(0,1513);bx.lineTo(W,1513);bx.stroke();bx.restore();
+  // road edge lines
+  bx.save();bx.globalAlpha=.32;bx.fillStyle='#e9dcb4';
+  for(const r of ROADS){ if(r.t!=='lane'){ if(r.h<r.w){bx.fillRect(r.x,r.y,r.w,3);bx.fillRect(r.x,r.y+r.h-3,r.w,3);}
+    else {bx.fillRect(r.x,r.y,3,r.h);bx.fillRect(r.x+r.w-3,r.y,3,r.h);} } }
+  bx.restore();
+}
+function paintRailway(){
+  const y=150;
+  bx.fillStyle='#6f6a60';bx.fillRect(0,y-26,W,52);
+  bx.fillStyle='#8b8377';bx.fillRect(0,y-20,W,40);
+  // sleepers
+  bx.fillStyle='#5c5650';
+  for(let x=0;x<W;x+=34){ bx.fillRect(x,y-16,16,32); }
+  // rails
+  bx.fillStyle='#cdd3d6';
+  bx.fillRect(0,y-12,W,5); bx.fillRect(0,y+7,W,5);
+  bx.fillStyle='rgba(255,255,255,.28)';
+  bx.fillRect(0,y-12,W,2); bx.fillRect(0,y+7,W,2);
+  plaque(bx,'রেললাইন',700,y-52,12);
+  plaque(bx,'🚉 রাজশাহী বিশ্ববিদ্যালয় স্টেশন',1420,y-52,12.5);
+}
+function paintPlazas(){
+  for(const p of PLAZAS){
+    bx.beginPath();bx.arc(p.x,p.y,p.r,0,TAU);
+    bx.fillStyle=p.t==='minar'?'#d7cbaa':p.t==='chattar'?'#cfc3a3':'#c9bf9f';bx.fill();
+    bx.strokeStyle='rgba(120,105,70,.35)';bx.lineWidth=4;bx.stroke();
+    bx.save();bx.strokeStyle='rgba(130,115,80,.26)';bx.lineWidth=2;
+    for(let a=0;a<TAU;a+=TAU/16){
+      bx.beginPath();bx.moveTo(p.x+Math.cos(a)*p.r*.3,p.y+Math.sin(a)*p.r*.3);
+      bx.lineTo(p.x+Math.cos(a)*p.r*.95,p.y+Math.sin(a)*p.r*.95);bx.stroke();
+    }bx.restore();
+  }
+  // link paths
+  bx.save();bx.strokeStyle=C.path;bx.lineCap='round';bx.lineWidth=42;
+  const P=[[1464,1276,1464,1420],[1464,1200,1464,1112],[1330,1112,1420,1112],[885,1180,885,1120],
+           [1080,962,1080,1020],[1470,700,1470,464],[1968,700,2060,700],[1968,1010,1980,1010],
+           [1726,1246,1726,1300],[2085,1282,2085,1200],[232,1392,232,1200],[2452,1392,2452,1200]];
+  for(const p of P){ bx.beginPath();bx.moveTo(p[0],p[1]);bx.lineTo(p[2],p[3]);bx.stroke(); }
+  bx.restore();
+}
+function tree(x,y,s,type){
+  bx.save();bx.globalAlpha=.26;bx.fillStyle='#24401f';
+  bx.beginPath();bx.ellipse(x+8*s,y+10*s,24*s,12*s,0,0,TAU);bx.fill();bx.restore();
+  bx.fillStyle='#6b4a2f';bx.fillRect(x-4*s,y-4*s,8*s,18*s);
+  const pal=type==='krishna'?['#e2703f','#d9603a','#c94f2e']:type==='mango'?['#2f7040','#3d8450','#265e36']
+        :['#4a8c50','#3c7a45','#2f6a3c'];
+  const blobs=[[0,-14,21],[-14,-4,14],[14,-5,14],[0,-25,13]];
+  blobs.forEach((b,i)=>{bx.beginPath();bx.arc(x+b[0]*s,y+b[1]*s,b[2]*s*(0.9+rnd()*0.25),0,TAU);
+    bx.fillStyle=pal[i%pal.length];bx.fill();});
+  bx.beginPath();bx.arc(x-4*s,y-18*s,7*s,0,TAU);bx.fillStyle='rgba(255,255,255,.13)';bx.fill();
+}
+function blocked(x,y){
+  for(const r of ROADS) if(x>r.x-26&&x<r.x+r.w+26&&y>r.y-26&&y<r.y+r.h+26) return true;
+  if(y>100&&y<205) return true;                        // railway
+  for(const b of BLD) if(x>b.x-26&&x<b.x+b.w+26&&y>b.y-26&&y<b.y+b.h+38) return true;
+  for(const p of PLAZAS) if(Math.hypot(x-p.x,y-p.y)<p.r+22) return true;
+  for(const l of LANDMARKS) if(Math.hypot(x-l.x,y-l.y)<54) return true;
+  return false;
+}
+function scatterTrees(){
+  for(let i=0;i<430;i++){
+    const x=rnd()*W,y=rnd()*(H-120)+120;
+    if(blocked(x,y)) continue;
+    if(Math.abs(x-188)<118) continue;          // keep the Paris Road avenue clear
+    if(x>210&&x<430&&y>1070&&y<1210) continue;  // football ground
+    if(x>1090&&x<1500&&y>590&&y<850) continue;  // stadium
+    if(x>1490&&x<1700&&y>720&&y<880) continue;  // swimming pool
+    if(x>1030&&x<1230&&y>860&&y<1060) continue; // Shaheed Minar plaza
+    if(x>310&&x<480&&y>960&&y<1100) continue;   // ইবলিশ পুকুর
+    if(x>1060&&x<2500&&y>1280&&y<1470) continue; // খাবারের গলি
+    if(x>830&&x<2540&&y>1470&&y<H) continue;     // bus stand apron
+    if(x>780&&x<960&&y>1180&&y<H) continue;      // gate corridor
+    if(y<370) continue;                        // station / north hall band
+    if(y<320||y>1460) { if(rnd()>.55) continue; }
+    tree(x,y,rrange(.7,1.12),rnd()>.9?'krishna':'plain');
+  }
+  // avenue planting along the ring road (south side skips the food street)
+  for(let x=260;x<2350;x+=210){
+    if(x>1540&&x<1930) continue;                // no avenue trees over the pool
+    if(x<1060||x>2500) tree(x,1310,rrange(.6,.78),'plain');
+    tree(x,478,rrange(.6,.78),'plain');
+  }
+  // mango grove near Binodpur / east side
+  for(let i=0;i<26;i++){
+    const x=rrange(2150,2500),y=rrange(760,1100);
+    if(blocked(x,y)) continue;
+    tree(x,y,rrange(.95,1.3),'mango');
+  }
+}
+function shadowRect(x,y,w,h){bx.save();bx.globalAlpha=.22;bx.fillStyle='#1e3318';
+  roundRect(bx,x+12,y+14,w,h,12);bx.fill();bx.restore();}
+function windows(x,y,w,h,cols,rows){
+  const pad=12,gw=(w-pad*2)/cols,gh=(h-pad*2)/rows;
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+    bx.fillStyle=(i+j)%7===3?'#ffe9a8':'#7fa7c4';bx.globalAlpha=.9;
+    roundRect(bx,x+pad+i*gw+gw*.18,y+pad+j*gh+gh*.2,gw*.64,gh*.55,2);bx.fill();
+  }
+  bx.globalAlpha=1;
+}
+/* ── a light 2.5D building: shadow, south wall, roof slab, rooftop clutter ── */
+const BLD_LABELS=[];
+function drawBuilding(b){
+  const {x,y,w,h}=b;
+  const e=Math.round(clamp(h*0.42,16,34));        // how much wall shows under the roof
+  const roof=b.k==='hall'?'#b2583d':b.k==='ghall'?'#8f5e8c':b.k==='library'?'#a5573a'
+    :b.k==='museum'?'#8d5b3a':b.k==='medical'?'#d1583f':b.k==='gym'?'#5f8398':'#bb6a4a';
+  const wall=b.k==='ghall'?'#e8dcc9':'#efe3ca';
+  // drop shadow
+  bx.save(); bx.globalAlpha=.24; bx.fillStyle='#1e3318';
+  roundRect(bx,x+9,y+11,w,h,11); bx.fill(); bx.restore();
+  // south façade (the bit you see from the front)
+  const gy=y+h-e;
+  const fg=bx.createLinearGradient(0,gy,0,y+h);
+  fg.addColorStop(0,wall); fg.addColorStop(1,'#cbb999');
+  bx.fillStyle=fg; roundRect(bx,x,gy,w,e+2,5); bx.fill();
+  // façade windows / doors
+  const nWin=Math.max(2,Math.round(w/46));
+  for(let i=0;i<nWin;i++){
+    const wx=x+8+i*((w-16)/nWin);
+    bx.fillStyle=b.k==='medical'?'#bfe0ea':'#7fa7c4';
+    roundRect(bx,wx,gy+e*0.26,(w-16)/nWin-9,e*0.5,2); bx.fill();
+  }
+  // the two side faces (a sliver of wall down each flank) sell the box
+  const sw2=Math.round(clamp(w*0.10,7,15));
+  bx.fillStyle='#d9ccb0'; roundRect(bx,x-sw2+2,y-e+6,sw2+3,h-e*0.4,4); bx.fill();
+  bx.fillStyle='#c3b596'; roundRect(bx,x+w-2,y-e+6,sw2+3,h-e*0.4,4); bx.fill();
+  // a dark line where the roof overhangs the wall
+  bx.fillStyle='rgba(60,45,30,.20)'; roundRect(bx,x+2,gy-3,w-4,4,2); bx.fill();
+  // roof slab sits above the wall
+  bx.fillStyle=roof; roundRect(bx,x,y-e,w,h,8); bx.fill();
+  // roof tone: lighter to the north-west, darker to the south-east
+  const rg=bx.createLinearGradient(x,y-e,x+w,y+h-e);
+  rg.addColorStop(0,'rgba(255,255,255,.30)'); rg.addColorStop(.55,'rgba(255,255,255,0)');
+  rg.addColorStop(1,'rgba(0,0,0,.16)');
+  bx.fillStyle=rg; roundRect(bx,x,y-e,w,h,8); bx.fill();
+  // parapet
+  bx.strokeStyle='rgba(60,45,30,.35)'; bx.lineWidth=2; roundRect(bx,x,y-e,w,h,8); bx.stroke();
+  bx.strokeStyle='rgba(255,255,255,.22)'; bx.lineWidth=1.4; roundRect(bx,x+3,y-e+3,w-6,h-6,6); bx.stroke();
+  // rooftop clutter: water tank, stair box, solar panel, AC units
+  const tiny=(cx,cy,ww,hh,col)=>{ bx.fillStyle=col; roundRect(bx,cx-ww/2,cy-hh/2,ww,hh,2.5); bx.fill();
+    bx.strokeStyle='rgba(0,0,0,.18)'; bx.lineWidth=1; bx.stroke(); };
+  const seed=(x*7+y*13)%9;
+  tiny(x+w*0.22,y-e+h*0.30,20,14,'#d8cfbb');
+  tiny(x+w*0.78,y-e+h*0.68,16,11,'#c9c0aa');
+  if(w>120) tiny(x+w*0.58,y-e+h*0.26,26,15,'#7f9fb5');
+  if(seed>4&&w>140){ // solar panel
+    bx.fillStyle='#4a6f8f'; roundRect(bx,x+w*0.36,y-e+h*0.62,w*0.26,h*0.20,2); bx.fill();
+    bx.strokeStyle='rgba(255,255,255,.35)'; bx.lineWidth=1;
+    for(let k=1;k<3;k++){ bx.beginPath(); bx.moveTo(x+w*0.36+k*w*0.086,y-e+h*0.62);
+      bx.lineTo(x+w*0.36+k*w*0.086,y-e+h*0.82); bx.stroke(); }
+  }
+  // the roof-top water tank most halls have
+  if(b.k==='hall'||b.k==='ghall'){
+    const tx=x+w-26, ty=y-e+18;
+    bx.fillStyle='#3b3f45'; bx.beginPath(); bx.ellipse(tx,ty,10,7,0,0,TAU); bx.fill();
+    bx.fillStyle='#5a6068'; bx.fillRect(tx-9,ty-2,18,8);
+    bx.fillStyle='rgba(255,255,255,.25)'; bx.beginPath(); bx.ellipse(tx-2,ty-3,4,2.4,0,0,TAU); bx.fill();
+  }
+  // kind-specific dressing
+  if(b.k==='medical'){
+    bx.fillStyle='rgba(255,255,255,.96)'; roundRect(bx,x+w/2-26,y-e+h/2-26,52,52,9); bx.fill();
+    bx.strokeStyle='rgba(200,70,60,.55)'; bx.lineWidth=1.6; bx.stroke();
+    bx.fillStyle='#e03b32';
+    roundRect(bx,x+w/2-5.5,y-e+h/2-18,11,36,2); bx.fill();
+    roundRect(bx,x+w/2-18,y-e+h/2-5.5,36,11,2); bx.fill();
+    bx.fillStyle='#e04a3c'; roundRect(bx,x+w/2-40,y+h-4,80,5,2.5); bx.fill();
+  }
+  if(b.k==='gym'){
+    bx.fillStyle='rgba(255,255,255,.85)'; roundRect(bx,x+w/2-34,y-e+h/2-16,68,32,6); bx.fill();
+    bx.fillStyle='#3c7fa6'; bx.beginPath(); bx.arc(x+w/2-12,y-e+h/2,7,0,TAU); bx.fill();
+    bx.fillStyle='#e6a13a'; bx.beginPath(); bx.arc(x+w/2+12,y-e+h/2,6,0,TAU); bx.fill();
+  }
+  if(b.k==='library'){
+    bx.fillStyle='rgba(255,255,255,.85)'; roundRect(bx,x+w/2-30,y-e+h/2-9,60,20,5); bx.fill();
+    bx.fillStyle='#f3e6d6'; roundRect(bx,x+w/2-22,y-e+h/2-3,44,7,3); bx.fill();
+  }
+  BLD_LABELS.push({x:x+w/2,y:y+h+7,t:b.l,k:b.k});
+}
+function drawBuildingLabels(){
+  for(const L of BLD_LABELS){
+    if(L.k==='block'){                       // academic blocks: cool-blue plaque
+      const fs=L.t.length>15?12:13;
+      bx.save(); bx.font=FONT(fs,700);
+      const tw=bx.measureText(L.t).width+16;
+      bx.fillStyle='rgba(233,244,252,.97)'; roundRect(bx,L.x-tw/2,L.y-9,tw,19,6); bx.fill();
+      bx.strokeStyle='rgba(58,110,150,.55)'; bx.lineWidth=1.3; bx.stroke();
+      bx.fillStyle='#20415c'; bx.textAlign='center'; bx.textBaseline='middle';
+      bx.fillText(L.t,L.x,L.y+1); bx.restore();
+    } else plaque(bx,L.t,L.x,L.y,L.t.length>15?11.5:13);
+  }
+}
+function drawMosque(b){
+  const {x,y,w,h}=b, cx=x+w/2, cy=y+h/2;
+  const e=20;
+  bx.save(); bx.globalAlpha=.24; bx.fillStyle='#1e3318';
+  roundRect(bx,x+9,y+11,w,h,11); bx.fill(); bx.restore();
+  // wall + dome seen from the front
+  bx.fillStyle='#e9dfc6'; roundRect(bx,x,y+h-e-6,w,e+10,5); bx.fill();
+  bx.fillStyle='#2f7d6a'; roundRect(bx,x,y-e,w,h,10); bx.fill();
+  const rg=bx.createLinearGradient(x,y-e,x+w,y+h-e);
+  rg.addColorStop(0,'rgba(255,255,255,.32)'); rg.addColorStop(1,'rgba(0,0,0,.18)');
+  bx.fillStyle=rg; roundRect(bx,x,y-e,w,h,10); bx.fill();
+  // dome
+  const g=bx.createRadialGradient(cx-16,cy-e-20,4,cx,cy-e,46);
+  g.addColorStop(0,'#bff3e2'); g.addColorStop(.6,'#5fc2a6'); g.addColorStop(1,'#2f8d76');
+  bx.beginPath(); bx.arc(cx,cy-e,40,0,TAU); bx.fillStyle=g; bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.5)'; bx.lineWidth=2.4; bx.stroke();
+  bx.fillStyle='rgba(255,255,255,.22)'; bx.beginPath(); bx.ellipse(cx-13,cy-e-15,12,7,-.5,0,TAU); bx.fill();
+  bx.beginPath(); bx.arc(cx,cy-e-40,5.5,0,TAU); bx.fillStyle='#ffd86b'; bx.fill();
+  // two minarets with length
+  for(const mxx of [x+26,x+w-26]){
+    bx.fillStyle='#f3ecda'; roundRect(bx,mxx-10,y-18,20,h+22,5); bx.fill();
+    bx.fillStyle='rgba(0,0,0,.10)'; roundRect(bx,mxx+1,y-18,9,h+22,5); bx.fill();
+    bx.fillStyle='#2f8d76'; bx.beginPath(); bx.arc(mxx,y-22,11,0,TAU); bx.fill();
+    bx.fillStyle='#ffd86b'; bx.beginPath(); bx.arc(mxx,y-38,4,0,TAU); bx.fill();
+  }
+  BLD_LABELS.push({x:cx,y:y+h+18,t:b.l,k:'mosque'});
+}
+function drawGate(cx,cy,label){
+  shadowRect(cx-92,cy-12,184,34);
+  for(const dx of [-80,80]){
+    bx.fillStyle='#efe4c8';roundRect(bx,cx+dx-16,cy-54,32,80,8);bx.fill();
+    bx.strokeStyle='rgba(90,70,45,.3)';bx.lineWidth=2;bx.stroke();
+    bx.fillStyle='#c4553a';roundRect(bx,cx+dx-16,cy-58,32,14,6);bx.fill();
+  }
+  bx.fillStyle='#f6ecd4';roundRect(bx,cx-98,cy-98,196,26,10);bx.fill();
+  bx.strokeStyle='rgba(90,70,45,.3)';bx.lineWidth=2;bx.stroke();
+  bx.fillStyle='#2f6b3a';roundRect(bx,cx-86,cy-94,172,18,8);bx.fill();
+  bx.save();bx.font=FONT(11.5,800);bx.fillStyle='#eaf7d8';bx.textAlign='center';bx.textBaseline='middle';
+  bx.fillText('রাজশাহী বিশ্ববিদ্যালয়',cx,cy-85);bx.restore();
+  plaque(bx,label,cx,cy+36,12);
+}
+function drawMinar(cx,cy){
+  bx.save();bx.globalAlpha=.24;bx.fillStyle='#2a3d21';
+  bx.beginPath();bx.ellipse(cx+8,cy+12,82,38,0,0,TAU);bx.fill();bx.restore();
+  bx.beginPath();bx.ellipse(cx,cy,80,36,0,0,TAU);bx.fillStyle='#e6dcc0';bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.4)';bx.lineWidth=3;bx.stroke();
+  const hs=[68,94,94,68];
+  for(let i=0;i<4;i++){
+    const px=cx-44+i*29.3;
+    const g=bx.createLinearGradient(px-9,0,px+9,0);
+    g.addColorStop(0,'#fdf7e6');g.addColorStop(.55,'#ffffff');g.addColorStop(1,'#ded0b2');
+    bx.fillStyle=g;roundRect(bx,px-9,cy-6-hs[i],18,hs[i]+8,5);bx.fill();
+    bx.strokeStyle='rgba(120,100,70,.2)';bx.lineWidth=1;bx.stroke();
+  }
+  bx.beginPath();bx.arc(cx,cy-56,12,0,TAU);bx.fillStyle='rgba(196,85,58,.85)';bx.fill();
+  plaque(bx,'কেন্দ্রীয় শহীদ মিনার',cx,cy+46,11.5);
+}
+
+/* ─────────────────────────  REAL-LOOKING LANDMARK ART  ─────────────────────────
+   Modelled on photos of the actual Rajshahi University landmarks:
+   · Main Gate  — red-brick hillock, white name-slab with the RU seal, blue railing,
+                  flower bed, IN/OUT booths, twin-lantern street lamps
+   · প্রশাসন ভবন — long cream block, dark window columns, central tower, brick front wall
+   · শহীদ মিনার  — tall central pillar pair + two side pairs on a stepped plinth
+   · প্যারিস রোড  — double rows of tall trees with white/red painted trunks
+*/
+
+function brickFill(x,y,w,h,r,col){
+  col=col||'#b4543a';
+  bx.fillStyle=col; roundRect(bx,x,y,w,h,r||6); bx.fill();
+  bx.save(); bx.beginPath(); roundRect(bx,x,y,w,h,r||6); bx.clip();
+  bx.strokeStyle='rgba(255,255,255,.16)'; bx.lineWidth=1;
+  for(let yy=y+6; yy<y+h; yy+=7){ bx.beginPath(); bx.moveTo(x,yy); bx.lineTo(x+w,yy); bx.stroke(); }
+  for(let row=0, yy=y+6; yy<y+h; yy+=7, row++){
+    const off=(row%2)?7:0;
+    for(let xx=x+off; xx<x+w; xx+=14){ bx.beginPath(); bx.moveTo(xx,yy-7); bx.lineTo(xx,yy); bx.stroke(); }
+  }
+  bx.restore();
+}
+function ruSeal(cx,cy,r){
+  bx.save();
+  bx.beginPath(); bx.arc(cx,cy,r,0,TAU); bx.fillStyle='#123a63'; bx.fill();
+  bx.beginPath(); bx.arc(cx,cy,r*.82,0,TAU); bx.strokeStyle='#f4f7f4'; bx.lineWidth=r*.10; bx.stroke();
+  // sunburst
+  bx.strokeStyle='#f6c453'; bx.lineWidth=r*.075; bx.lineCap='round';
+  for(let i=0;i<12;i++){ const a=i/12*TAU;
+    bx.beginPath(); bx.moveTo(cx+Math.cos(a)*r*.30,cy+Math.sin(a)*r*.30);
+    bx.lineTo(cx+Math.cos(a)*r*.56,cy+Math.sin(a)*r*.56); bx.stroke(); }
+  // open book
+  bx.fillStyle='#f4f7f4';
+  bx.beginPath();
+  bx.moveTo(cx-r*.44,cy+r*.20); bx.lineTo(cx-r*.06,cy+r*.05); bx.lineTo(cx-r*.06,cy+r*.44);
+  bx.lineTo(cx-r*.44,cy+r*.56); bx.closePath(); bx.fill();
+  bx.beginPath();
+  bx.moveTo(cx+r*.44,cy+r*.20); bx.lineTo(cx+r*.06,cy+r*.05); bx.lineTo(cx+r*.06,cy+r*.44);
+  bx.lineTo(cx+r*.44,cy+r*.56); bx.closePath(); bx.fill();
+  bx.restore();
+}
+function lampPost(x,y,h){
+  bx.save();
+  bx.globalAlpha=.22; bx.fillStyle='#2a3d21';
+  bx.beginPath(); bx.ellipse(x+4,y+6,16,7,0,0,TAU); bx.fill(); bx.globalAlpha=1;
+  bx.strokeStyle='#2f3a34'; bx.lineWidth=3;
+  bx.beginPath(); bx.moveTo(x,y+4); bx.lineTo(x,y-h); bx.stroke();
+  bx.strokeStyle='#2f3a34'; bx.lineWidth=2.5;
+  bx.beginPath(); bx.moveTo(x-1,y-h+8); bx.lineTo(x-15,y-h+2); bx.stroke();
+  bx.beginPath(); bx.moveTo(x+1,y-h+8); bx.lineTo(x+15,y-h+2); bx.stroke();
+  for(const dx of [-15,15]){
+    bx.fillStyle='#333c38';
+    roundRect(bx,x+dx-6,y-h-6,12,12,3); bx.fill();
+    bx.fillStyle='#ffe9a8';
+    roundRect(bx,x+dx-4,y-h-4,8,8,2); bx.fill();
+    bx.beginPath(); bx.moveTo(x+dx-7,y-h-6); bx.lineTo(x+dx+7,y-h-6); bx.lineTo(x+dx,y-h-13); bx.closePath();
+    bx.fillStyle='#333c38'; bx.fill();
+  }
+  bx.restore();
+}
+
+/* ═════════ MUKTA: MAIN GATE (hillock + name slab + IN/OUT) ═════════ */
+function drawMainGate(cx,cy,label){
+  // soft shadow
+  bx.save(); bx.globalAlpha=.22; bx.fillStyle='#1e3318';
+  roundRect(bx,cx-150,cy-46,300,112,50); bx.fill(); bx.restore();
+
+  // ── booth pillars (IN / OUT) ──
+  for(const side of [-1,1]){
+    const bxp=cx+side*172, bY=cy+18;
+    brickFill(bxp-20,bY-26,40,96,6,'#a94e37');
+    bx.fillStyle='#e8e2d2'; roundRect(bx,bxp-24,bY-34,48,10,3); bx.fill();
+    // blue lantern cage on top
+    bx.fillStyle='#2f8fd0'; roundRect(bx,bxp-13,bY-60,26,26,4); bx.fill();
+    bx.strokeStyle='#eaf4fb'; bx.lineWidth=1.5;
+    bx.beginPath(); bx.moveTo(bxp-13,bY-47); bx.lineTo(bxp+13,bY-47); bx.stroke();
+    bx.beginPath(); bx.moveTo(bxp,bY-60); bx.lineTo(bxp,bY-34); bx.stroke();
+    // IN / OUT plate
+    bx.fillStyle='#fbfaf5'; roundRect(bx,bxp-19,bY+6,38,20,3); bx.fill();
+    bx.strokeStyle='#8a8f86'; bx.lineWidth=1; bx.stroke();
+    bx.fillStyle='#1d3f6b'; bx.font=FONT(11,800); bx.textAlign='center'; bx.textBaseline='middle';
+    bx.fillText(side<0?'IN':'OUT',bxp,bY+16.5);
+  }
+
+  // ── brick hillock (planter base) ──
+  brickFill(cx-126,cy-42,252,84,40,'#b4543a');
+  bx.fillStyle='rgba(255,255,255,.10)';
+  roundRect(bx,cx-120,cy-38,240,28,24); bx.fill();
+  // inner grass bed
+  bx.fillStyle='#5f9450'; roundRect(bx,cx-106,cy-32,212,62,28); bx.fill();
+  bx.strokeStyle='rgba(40,80,35,.35)'; bx.lineWidth=2; bx.stroke();
+  // flower bed (orange / yellow / white clusters like the photo)
+  const flowerCols=['#f4a02a','#ffd75e','#f2f2ea','#e2603a','#f7b1c8'];
+  for(let i=0;i<130;i++){
+    const fx=cx+rrange(-100,100), fy=cy+rrange(-28,26);
+    if(Math.abs(fx-cx)<58 && fy<cy-6) continue;         // keep the slab base clear
+    bx.fillStyle=flowerCols[(i*7)%flowerCols.length];
+    bx.beginPath(); bx.arc(fx,fy,rrange(1.7,3.1),0,TAU); bx.fill();
+  }
+  bx.fillStyle='rgba(60,110,50,.55)';
+  for(let i=0;i<70;i++){
+    const fx=cx+rrange(-102,102), fy=cy+rrange(-30,28);
+    if(Math.abs(fx-cx)<58 && fy<cy-6) continue;
+    bx.beginPath(); bx.ellipse(fx,fy,2.6,1.7,i,0,TAU); bx.fill();
+  }
+
+  // ── blue railing around the bed ──
+  bx.save();
+  bx.strokeStyle='#2f8fd0'; bx.lineWidth=3;
+  roundRect(bx,cx-112,cy-38,224,74,30); bx.stroke();
+  bx.strokeStyle='#59b0e6'; bx.lineWidth=2;
+  roundRect(bx,cx-112,cy-22,224,42,20); bx.stroke();
+  bx.strokeStyle='#2f8fd0'; bx.lineWidth=2;
+  for(let i=-5;i<=5;i++){
+    if(Math.abs(i)<2) continue;                       // leave the carriageway clear
+    bx.beginPath(); bx.moveTo(cx+i*20,cy-34); bx.lineTo(cx+i*20,cy+30); bx.stroke();
+  }
+  bx.restore();
+
+  // ── the big white name-slab on its brick frame ──
+  const slabW=104, slabH=126, slabX=cx-slabW/2, slabY=cy-40-slabH;
+  bx.save();
+  bx.globalAlpha=.20; bx.fillStyle='#1e3318';
+  roundRect(bx,slabX+10,slabY+18,slabW,slabH,10); bx.fill(); bx.restore();
+  brickFill(slabX-13,slabY-13,slabW+26,slabH+30,8,'#a9503a');
+  bx.fillStyle='#f7f3e7'; roundRect(bx,slabX,slabY,slabW,slabH,6); bx.fill();
+  bx.strokeStyle='rgba(120,110,90,.35)'; bx.lineWidth=1.5; bx.stroke();
+  // stepped white cap on top
+  bx.fillStyle='#efe9d8'; roundRect(bx,slabX+16,slabY-24,slabW-32,26,4); bx.fill();
+  bx.fillStyle='#dfd7c2'; roundRect(bx,slabX+30,slabY-40,slabW-60,20,4); bx.fill();
+  // seal + lettering
+  ruSeal(cx,slabY+38,22);
+  bx.fillStyle='#1d3f6b'; bx.textAlign='center'; bx.textBaseline='middle';
+  bx.font=FONT(13.5,800);
+  bx.fillText('রাজশাহী বিশ্ববিদ্যালয়',cx,slabY+84);
+  bx.font=FONT(9.5,700); bx.fillStyle='#3d5a86';
+  bx.fillText('স্থাপিত : ১৯৫৩',cx,slabY+104);
+  bx.restore();
+
+  // ── stepped brick pillars flanking the slab ──
+  for(const side of [-1,1]){
+    const px=cx+side*78;
+    for(let i=0;i<3;i++){
+      const w=22-i*4, h=68-i*17;
+      brickFill(px-w/2+side*i*5, cy-42-h, w, h, 4, i===0?'#b4543a':'#ab4f39');
+    }
+    bx.fillStyle='#efe9d8'; roundRect(bx,px-10,cy-112,20,6,2); bx.fill();
+  }
+
+  // ── twin-lantern street lamps ──
+  lampPost(cx-96,cy+26,112);
+  lampPost(cx+96,cy+26,112);
+}
+function iy2(v){ return v; }
+
+/* ═════════ ADMIN BUILDING 1 (long cream block + tower) ═════════ */
+function drawAdminBuilding(cx,baseY,W0){
+  const w=W0||392, h=136;
+  const x=cx-w/2, y=baseY-h;
+  // ground shadow
+  bx.save(); bx.globalAlpha=.20; bx.fillStyle='#1e3318';
+  roundRect(bx,x+12,y+18,w,h+12,10); bx.fill(); bx.restore();
+
+  // ── main block ──
+  bx.fillStyle='#e9e3cf'; roundRect(bx,x,y,w,h,7); bx.fill();
+  bx.strokeStyle='rgba(90,80,60,.35)'; bx.lineWidth=2; bx.stroke();
+  // cream facade band
+  bx.fillStyle='#f2ead0'; roundRect(bx,x+5,y+5,w-10,h-10,5); bx.fill();
+
+  // dark window columns (3 floors)
+  const cols=13, pad=13, gw=(w-pad*2)/cols;
+  for(let i=0;i<cols;i++){
+    const cxw=x+pad+i*gw;
+    if(Math.abs(cxw+gw/2-cx)<46) continue;              // leave the tower bay clear
+    bx.fillStyle='#6b5540';
+    roundRect(bx,cxw+gw*.10,y+20,gw*.46,h-48,2); bx.fill();
+    bx.fillStyle='#8f7654';
+    for(let f=0;f<3;f++){
+      roundRect(bx,cxw+gw*.10+1.5,y+24+f*((h-54)/3),gw*.46-3,((h-54)/3)-9,1.5); bx.fill();
+    }
+    // AC units
+    if(i%3===1){ bx.fillStyle='#cfd6d2'; roundRect(bx,cxw+gw*.66,y+30,7,9,1); bx.fill();
+      roundRect(bx,cxw+gw*.66,y+30+((h-52)/3),7,9,1); bx.fill(); }
+  }
+  // horizontal floor lines
+  bx.strokeStyle='rgba(120,105,80,.30)'; bx.lineWidth=1.5;
+  for(let f=1;f<3;f++){ const yy=y+22+f*((h-52)/3)-4;
+    bx.beginPath(); bx.moveTo(x+8,yy); bx.lineTo(x+w-8,yy); bx.stroke(); }
+  // roof lip
+  bx.fillStyle='#cfc7b0'; roundRect(bx,x-4,y+2,w+8,8,4); bx.fill();
+
+  // ── central tower (neck first so it merges with the roof) ──
+  const tw=86, tx=cx-tw/2, ty=y-126;
+  bx.fillStyle='#c9c2ae'; roundRect(bx,cx-tw/2-6,ty+96,tw+12,y-ty-84,4); bx.fill();
+  bx.strokeStyle='rgba(90,80,60,.25)'; bx.lineWidth=1.5; bx.stroke();
+  bx.save(); bx.globalAlpha=.20; bx.fillStyle='#1e3318';
+  roundRect(bx,tx+8,ty+10,tw,124,6); bx.fill(); bx.restore();
+  bx.fillStyle='#dcd6c4'; roundRect(bx,tx,ty,tw,124,5); bx.fill();
+  bx.fillStyle='#cfc8b4'; roundRect(bx,tx+8,ty+8,tw-16,108,4); bx.fill();
+  // vertical slot windows
+  bx.fillStyle='#4a3c2c';
+  roundRect(bx,cx-16,ty+16,32,40,3); bx.fill();
+  roundRect(bx,cx-16,ty+62,32,30,3); bx.fill();
+  bx.fillStyle='#6e5a42';
+  roundRect(bx,cx-12,ty+20,24,14,2); bx.fill();
+  roundRect(bx,cx-12,ty+38,24,14,2); bx.fill();
+  // roof cap + mast
+  bx.fillStyle='#e7e1cf'; roundRect(bx,tx+6,ty-12,tw-12,14,3); bx.fill();
+  bx.strokeStyle='#6d6a60'; bx.lineWidth=2;
+  bx.beginPath(); bx.moveTo(cx,ty-12); bx.lineTo(cx,ty-62); bx.stroke();
+  // tower shade so it doesn't look pasted on
+  bx.fillStyle='rgba(80,70,50,.10)';
+  roundRect(bx,tx+tw-14,ty+6,14,116,4); bx.fill();
+
+  // ── entrance ──
+  bx.fillStyle='#b8ae95'; roundRect(bx,cx-34,baseY-46,68,44,4); bx.fill();
+  bx.fillStyle='#3b3630'; roundRect(bx,cx-20,baseY-34,40,32,3); bx.fill();
+  bx.fillStyle='#f4f1e4'; roundRect(bx,cx-40,baseY-52,80,16,3); bx.fill();
+  bx.fillStyle='#1d3f6b'; bx.font=FONT(9.5,800); bx.textAlign='center'; bx.textBaseline='middle';
+  bx.fillText('প্রশাসন ভবন',cx,baseY-44);
+
+  // ── front brick wall + lawn (as in the photo) ──
+  brickFill(cx-w/2-16,baseY+6,w+32,13,3,'#a9543c');
+  bx.fillStyle='#6aa757'; roundRect(bx,cx-w/2-8,baseY+19,w+16,20,3); bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.35)'; bx.lineWidth=1.5;
+  roundRect(bx,cx-w/2-8,baseY+19,w+16,20,3); bx.stroke();
+
+  plaque(bx,'প্রশাসন ভবন-১',cx,baseY+46,12.5);
+}
+
+/* ═════════ SHAHEED MINAR — two tall fins + shorter side pairs ═════════ */
+function drawShaheedMinar(cx,cy){
+  // grass mound
+  bx.save(); bx.globalAlpha=.20; bx.fillStyle='#2a3d21';
+  bx.beginPath(); bx.ellipse(cx+8,cy+24,100,46,0,0,TAU); bx.fill(); bx.restore();
+  bx.beginPath(); bx.ellipse(cx,cy+10,94,42,0,0,TAU); bx.fillStyle='#6aa757'; bx.fill();
+  bx.strokeStyle='rgba(40,80,35,.25)'; bx.lineWidth=2; bx.stroke();
+
+  // approach steps (south)
+  for(let i=0;i<5;i++){
+    const w=142+i*15, y=cy+26+i*8;
+    bx.fillStyle=['#d5ccb6','#ccc3ac','#c3b9a1','#bab097','#b1a78d'][i];
+    roundRect(bx,cx-w/2,y,w,9,2); bx.fill();
+    bx.strokeStyle='rgba(90,80,60,.18)'; bx.lineWidth=1; bx.stroke();
+  }
+  // granite plinth
+  bx.fillStyle='#e2d9c4'; roundRect(bx,cx-92,cy-24,184,54,4); bx.fill();
+  bx.strokeStyle='rgba(90,80,60,.28)'; bx.lineWidth=1.5; bx.stroke();
+  bx.fillStyle='rgba(255,255,255,.4)'; roundRect(bx,cx-88,cy-20,176,11,3); bx.fill();
+  // low brick side walls (graffiti walls either side)
+  for(const side of [-1,1]){
+    brickFill(cx+side*104-7,cy-40,14,70,3,'#a9543c');
+    bx.fillStyle='#f1eee1'; roundRect(bx,cx+side*104-5,cy-22,10,18,2); bx.fill();
+  }
+
+  // ── pillars: two wide central fins, two shorter flanks ──
+  const fin=(px,top,wd,ang,tone)=>{
+    bx.save(); bx.translate(px,cy-22); bx.rotate(ang);
+    bx.globalAlpha=.16; bx.fillStyle='#2a3d21';
+    roundRect(bx,-wd/2+7,-top+12,wd,top+14,3); bx.fill(); bx.globalAlpha=1;
+    const g=bx.createLinearGradient(-wd/2,0,wd/2,0);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(.42,'#f7f6f1'); g.addColorStop(1,tone||'#d8d3c6');
+    bx.fillStyle=g; roundRect(bx,-wd/2,-top,wd,top+8,2); bx.fill();
+    bx.strokeStyle='rgba(120,115,100,.35)'; bx.lineWidth=1; bx.stroke();
+    // inner shading face for the "folded fin" look
+    bx.fillStyle='rgba(150,145,130,.22)';
+    roundRect(bx,wd*0.10,-top+4,wd*0.40,top,1); bx.fill();
+    // form-work seams
+    bx.strokeStyle='rgba(150,145,130,.38)'; bx.lineWidth=.8;
+    for(let yy=-top+18; yy<-6; yy+=24){ bx.beginPath(); bx.moveTo(-wd/2,yy); bx.lineTo(wd/2,yy); bx.stroke(); }
+    bx.restore();
+  };
+  // flanks first (behind), then the two tall central fins
+  fin(cx-70,72,17, 0.055,'#ded9cc');
+  fin(cx+70,80,17,-0.05,'#ded9cc');
+  fin(cx-16,150,27, 0.018);
+  fin(cx+16,168,27,-0.014);
+
+  // plaque on the plinth
+  bx.fillStyle='#f4f1e4'; roundRect(bx,cx-30,cy-10,60,18,2); bx.fill();
+  bx.strokeStyle='rgba(120,110,90,.35)'; bx.lineWidth=1; bx.stroke();
+  bx.fillStyle='#7a3b2a'; bx.font=FONT(7.5,800); bx.textAlign='center'; bx.textBaseline='middle';
+  bx.fillText('শহীদ মিনার',cx,cy-1);
+
+  plaque(bx,'কেন্দ্রীয় শহীদ মিনার',cx,cy+74,12);
+}
+
+/* ═════════ PARIS ROAD — the tree tunnel ═════════ */
+function tallAvenueTree(x,y,s){
+  bx.save();
+  bx.globalAlpha=.20; bx.fillStyle='#24401f';
+  bx.beginPath(); bx.ellipse(x+9*s,y+9*s,20*s,9*s,0,0,TAU); bx.fill(); bx.globalAlpha=1;
+  // tall bare-ish trunk with white paint + red band (as painted on campus)
+  bx.fillStyle='#7a5738'; roundRect(bx,x-3.4*s,y-30*s,6.8*s,38*s,2.4*s); bx.fill();
+  bx.fillStyle='#f2efe6'; roundRect(bx,x-3.4*s,y+2*s,6.8*s,7*s,1.6*s); bx.fill();
+  bx.fillStyle='#c9543a'; roundRect(bx,x-3.4*s,y-1*s,6.8*s,3.2*s,1.2*s); bx.fill();
+  // canopy — tall, airy, overlapping the road
+  const pal=['#3f7d46','#4d8f50','#356f3f'];
+  for(let i=0;i<6;i++){
+    const a=(i/6)*TAU+0.4;
+    bx.beginPath();
+    bx.ellipse(x+Math.cos(a)*15*s, y-40*s+Math.sin(a)*12*s, 16*s, 12*s, a, 0, TAU);
+    bx.fillStyle=pal[i%3]; bx.fill();
+  }
+  bx.beginPath(); bx.ellipse(x,y-46*s,17*s,13*s,0,0,TAU); bx.fillStyle='#4a8c50'; bx.fill();
+  bx.beginPath(); bx.ellipse(x-6*s,y-52*s,8*s,6*s,0,0,TAU); bx.fillStyle='rgba(255,255,255,.13)'; bx.fill();
+  bx.restore();
+}
+function bench(x,y,rot){
+  bx.save(); bx.translate(x,y); bx.rotate(rot||0);
+  bx.globalAlpha=.22; bx.fillStyle='#1e3318'; bx.beginPath(); bx.ellipse(2,4,15,5,0,0,TAU); bx.fill(); bx.globalAlpha=1;
+  bx.fillStyle='#b98a4e'; roundRect(bx,-14,-3,28,7,2); bx.fill();
+  bx.fillStyle='#8d6237'; roundRect(bx,-12,3,4,5,1); bx.fill(); roundRect(bx,8,3,4,5,1); bx.fill();
+  bx.fillStyle='#a3752f'; roundRect(bx,-14,-9,28,4,2); bx.fill();
+  bx.restore();
+}
+function drawParisRoadV(y0,y1,x){
+  // sandy shoulders
+  bx.fillStyle='#cdbb95';
+  roundRect(bx,x-86,y0,26,y1-y0,8); bx.fill();
+  roundRect(bx,x+60,y0,26,y1-y0,8); bx.fill();
+  bx.fillStyle='rgba(255,255,255,.10)';
+  roundRect(bx,x-86,y0,8,y1-y0,4); bx.fill();
+  // double rows of tall trees, both sides
+  for(let y=y0+18;y<y1;y+=54){
+    tallAvenueTree(x-76, y, 1.30+((y/54)%2)*0.16);
+    tallAvenueTree(x+78, y+27, 1.26+((y/54)%2)*0.14);
+  }
+  for(let y=y0+120;y<y1;y+=240){ bench(x+40, y, -Math.PI/2); }
+  for(let y=y0+200;y<y1;y+=330){ lampPost(x-52, y, 74); }
+}
+function drawParisRoad(x0,x1,y){
+  // sandy shoulders
+  bx.fillStyle='#cdbb95';
+  roundRect(bx,x0,y-58,x1-x0,26,8); bx.fill();
+  roundRect(bx,x0,y+50,x1-x0,26,8); bx.fill();
+  bx.fillStyle='rgba(255,255,255,.10)';
+  roundRect(bx,x0,y-58,x1-x0,8,4); bx.fill();
+  // double rows of tall trees both sides
+  for(let x=x0+18;x<x1;x+=54){
+    tallAvenueTree(x, y-54, 1.28+((x/54)%2)*0.16);
+    tallAvenueTree(x+27, y+60, 1.24+((x/54)%2)*0.14);
+  }
+  // benches + lamps along the north shoulder
+  for(let x=x0+90;x<x1;x+=220){ bench(x, y-34, 0); }
+  for(let x=x0+210;x<x1;x+=320){ lampPost(x, y+36, 74); }
+}
+
+function drawMukta(cx,cy){
+  bx.save();bx.globalAlpha=.22;bx.fillStyle='#2a3d21';
+  bx.beginPath();bx.ellipse(cx+8,cy+12,88,40,0,0,TAU);bx.fill();bx.restore();
+  for(let i=3;i>=0;i--){
+    bx.beginPath();bx.arc(cx,cy,78-i*15,Math.PI,TAU);
+    bx.fillStyle=['#b9a887','#cbba98','#daccaa','#e6dab8'][i];bx.fill();
+    bx.strokeStyle='rgba(110,95,65,.3)';bx.lineWidth=2;bx.stroke();
+  }
+  bx.fillStyle='#8a4a36';roundRect(bx,cx-64,cy-6,128,13,5);bx.fill();
+  plaque(bx,'মুক্তমঞ্চ',cx,cy+32,12);
+}
+function drawStadium(cx,cy){
+  /* ── main stadium: 3 tiers of stands + roofs + floodlights + cricket oval ── */
+  bx.save();
+  bx.globalAlpha=.22; bx.fillStyle='#1d3a19';
+  bx.beginPath(); bx.ellipse(cx+12,cy+16,196,124,0,0,TAU); bx.fill();
+  bx.restore();
+
+  // outer concourse
+  bx.beginPath(); bx.ellipse(cx,cy,196,124,0,0,TAU);
+  bx.fillStyle='#d9cfb4'; bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)'; bx.lineWidth=3; bx.stroke();
+
+  // stand tiers (concentric arcs of seats, north+south heavier)
+  const tiers=[[176,110,'#c3b393'],[154,96,'#b7a68a'],[132,82,'#ab9a7e']];
+  for(const [rx,ry,col] of tiers){
+    bx.beginPath(); bx.ellipse(cx,cy,rx,ry,0,0,TAU);
+    bx.fillStyle=col; bx.fill();
+    // seat dots
+    for(let a=0;a<TAU;a+=0.055){
+      const sx=cx+Math.cos(a)*rx*.94, sy=cy+Math.sin(a)*ry*.94;
+      bx.fillStyle=(Math.sin(a*37)>0)?'rgba(255,255,255,.25)':'rgba(90,80,60,.22)';
+      bx.beginPath(); bx.arc(sx,sy,1.7,0,TAU); bx.fill();
+    }
+    bx.strokeStyle='rgba(90,80,60,.25)'; bx.lineWidth=1.4;
+    bx.beginPath(); bx.ellipse(cx,cy,rx,ry,0,0,TAU); bx.stroke();
+  }
+
+  // roof shadow ring + two pavilion boxes
+  bx.strokeStyle='rgba(60,50,35,.30)'; bx.lineWidth=9;
+  bx.beginPath(); bx.ellipse(cx,cy,188,118,0,Math.PI*0.06,Math.PI*0.94); bx.stroke();
+  for(const [px,py,pw,ph] of [[cx-150,cy-96,64,34],[cx+86,cy-96,64,34]]){
+    bx.fillStyle='#efe9d8'; roundRect(bx,px,py,pw,ph,4); bx.fill();
+    bx.fillStyle='#b9ae95'; roundRect(bx,px+5,py+5,pw-10,ph-10,3); bx.fill();
+    bx.fillStyle='#f7f3e7'; roundRect(bx,px-4,py-6,pw+8,8,3); bx.fill();
+  }
+
+  // floodlight towers
+  for(const [fx,fy] of [[cx-186,cy-104],[cx+186,cy-104],[cx-186,cy+104],[cx+186,cy+104]]){
+    bx.strokeStyle='#6d6a60'; bx.lineWidth=4;
+    bx.beginPath(); bx.moveTo(fx,fy); bx.lineTo(fx,fy-34); bx.stroke();
+    bx.fillStyle='#4c4a44'; roundRect(bx,fx-16,fy-48,32,14,3); bx.fill();
+    bx.fillStyle='#fff6cf';
+    for(let i=0;i<4;i++){ roundRect(bx,fx-14+i*7,fy-46,5,10,1.5); bx.fill(); }
+    bx.save(); bx.globalAlpha=.18; bx.fillStyle='#fff2b0';
+    bx.beginPath(); bx.moveTo(fx,fy-34); bx.lineTo(fx-46,cy); bx.lineTo(fx+46,cy); bx.closePath(); bx.fill();
+    bx.restore();
+  }
+
+  // outfield (cricket)
+  bx.beginPath(); bx.ellipse(cx,cy,112,68,0,0,TAU);
+  gradientFill(bx,cx-112,cy-68,cx+112,cy+68,'#93cc74','#78b95e');
+  bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.75)'; bx.lineWidth=3; bx.stroke();
+  // boundary rope
+  bx.beginPath(); bx.ellipse(cx,cy,104,62,0,0,TAU);
+  bx.strokeStyle='rgba(255,255,255,.45)'; bx.lineWidth=1.6; bx.setLineDash([7,7]); bx.stroke(); bx.setLineDash([]);
+  // 30-yard circle
+  bx.beginPath(); bx.ellipse(cx,cy,64,38,0,0,TAU);
+  bx.strokeStyle='rgba(255,255,255,.42)'; bx.lineWidth=1.6; bx.stroke();
+
+  // the pitch (runs north–south through the middle)
+  bx.fillStyle='#d8c79a'; roundRect(bx,cx-15,cy-44,30,88,3); bx.fill();
+  bx.strokeStyle='rgba(150,130,90,.55)'; bx.lineWidth=1; bx.stroke();
+  // creases + stumps
+  for(const y of [cy-38,cy+38]){
+    bx.strokeStyle='rgba(255,255,255,.85)'; bx.lineWidth=1.6;
+    bx.beginPath(); bx.moveTo(cx-11,y); bx.lineTo(cx+11,y); bx.stroke();
+    for(const sx of [cx-6,cx,cx+6]){
+      bx.fillStyle='#f6f1e2'; roundRect(bx,sx-1.3,y-4.5,2.6,9,1); bx.fill();
+    }
+    bx.fillStyle='#e8dfc6'; bx.beginPath(); bx.arc(cx-14,y+2,3,0,TAU); bx.fill();
+  }
+  plaque(bx,'স্টেডিয়াম · ক্রিকেট',cx,cy+152,12.5);
+}
+
+/* ── a second ground for football, just north-west of the stadium ── */
+const FOOTBALL={x:230,y:1090,w:180,h:100};
+function drawFootballGround(){
+  const {x,y,w,h}=FOOTBALL;
+  bx.save(); bx.globalAlpha=.20; bx.fillStyle='#1d3a19';
+  roundRect(bx,x+8,y+10,w,h,10); bx.fill(); bx.restore();
+  // apron + pitch
+  bx.fillStyle='#cbbfa1'; roundRect(bx,x-12,y-12,w+24,h+24,10); bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)'; bx.lineWidth=2; bx.stroke();
+  gradientFill(bx,x,y,x+w,y+h,'#8cc46b','#6fae55');
+  bx.fillRect(x,y,w,h);
+  bx.fillStyle='rgba(255,255,255,.05)';
+  for(let i=0;i<8;i++){ if(i%2) bx.fillRect(x+i*(w/8),y,w/8,h); }
+  // markings
+  bx.strokeStyle='rgba(255,255,255,.8)'; bx.lineWidth=2;
+  roundRect(bx,x+3,y+3,w-6,h-6,3); bx.stroke();
+  bx.beginPath(); bx.moveTo(x+w/2,y+3); bx.lineTo(x+w/2,y+h-3); bx.stroke();
+  bx.beginPath(); bx.arc(x+w/2,y+h/2,22,0,TAU); bx.stroke();
+  bx.fillStyle='rgba(255,255,255,.85)'; bx.beginPath(); bx.arc(x+w/2,y+h/2,2.4,0,TAU); bx.fill();
+  // boxes + goals
+  for(const side of [-1,1]){
+    const bx0 = side<0 ? x+3 : x+w-3-46;
+    bx.strokeStyle='rgba(255,255,255,.8)'; bx.lineWidth=2;
+    bx.strokeRect(bx0, y+h/2-26, 46, 52);
+    bx.strokeRect(side<0?x+3:x+w-3-18, y+h/2-15, 18, 30);
+    // goal frame
+    bx.strokeStyle='#f3f6f2'; bx.lineWidth=3;
+    const gx = side<0 ? x+1 : x+w-1;
+    bx.beginPath(); bx.moveTo(gx,y+h/2-11); bx.lineTo(gx,y+h/2+11); bx.stroke();
+  }
+  plaque(bx,'ফুটবল মাঠ',x+w/2,y+h+30,12);
+}
+function gradientFill(c,x0,y0,x1,y1,c1,c2){
+  const g=c.createLinearGradient(x0,y0,x1,y1);
+  g.addColorStop(0,c1); g.addColorStop(1,c2);
+  c.fillStyle=g;
+}
+function drawRoundabout(cx,cy){
+  bx.beginPath();bx.arc(cx,cy,74,0,TAU);bx.fillStyle='#c9bf9f';bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.65)';bx.lineWidth=4;bx.stroke();
+  bx.beginPath();bx.arc(cx,cy,40,0,TAU);bx.fillStyle='#5f9450';bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)';bx.lineWidth=3;bx.stroke();
+  bx.fillStyle='#e8dcc0';bx.beginPath();bx.arc(cx,cy,15,0,TAU);bx.fill();
+  bx.fillStyle='#c4553a';bx.beginPath();bx.arc(cx,cy,8,0,TAU);bx.fill();
+}
+function drawChattar(cx,cy){
+  bx.beginPath();bx.arc(cx,cy,52,0,TAU);bx.fillStyle='#5f9450';bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)';bx.lineWidth=4;bx.stroke();
+  for(let i=0;i<6;i++){
+    const a=i/6*TAU;
+    bx.save();bx.translate(cx+Math.cos(a)*38,cy+Math.sin(a)*38);bx.rotate(a);
+    bx.fillStyle='#b98a4e';roundRect(bx,-12,-4,24,9,3);bx.fill();bx.restore();
+  }
+  bx.fillStyle='#e8dcc0';bx.beginPath();bx.arc(cx,cy-2,13,0,TAU);bx.fill();
+  bx.fillStyle='#c4553a';bx.beginPath();bx.arc(cx,cy-2,7,0,TAU);bx.fill();
+  plaque(bx,'চত্বর',cx,cy+62,11.5);
+}
+/* ── sports complex east of the stadium (pool, gym, tennis, basketball) ── */
+function drawPoolComplex(cx,cy){
+  // deck
+  bx.fillStyle='rgba(0,0,0,.10)';roundRect(bx,cx-104,cy-74,208,148,14);bx.fill();
+  bx.fillStyle='#efe7d1';roundRect(bx,cx-104,cy-78,208,148,14);bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)';bx.lineWidth=2.4;roundRect(bx,cx-104,cy-78,208,148,14);bx.stroke();
+  bx.fillStyle='#f7f2e2';roundRect(bx,cx-88,cy-62,176,124,11);bx.fill();
+
+  // water
+  const wx=cx-80,wy=cy-54,ww=160,wh=104;
+  const g=bx.createLinearGradient(wx,wy,wx+ww*.6,wy+wh);
+  g.addColorStop(0,'#74dcf3');g.addColorStop(.45,'#33b2e0');g.addColorStop(1,'#1a80b4');
+  bx.fillStyle=g;roundRect(bx,wx,wy,ww,wh,9);bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.9)';bx.lineWidth=3;roundRect(bx,wx,wy,ww,wh,9);bx.stroke();
+  bx.strokeStyle='rgba(255,255,255,.38)';bx.lineWidth=1.4;
+  for(let i=0;i<6;i++){const yy=wy+9+i*17;bx.beginPath();bx.moveTo(wx+10+i*3,yy);bx.lineTo(wx+ww-16-(i%3)*8,yy);bx.stroke();}
+  // lane ropes — 4 lanes
+  for(let i=1;i<4;i++){
+    const yy=wy+i*wh/4;
+    bx.strokeStyle='#f6f6f6';bx.lineWidth=1.3;bx.beginPath();bx.moveTo(wx+5,yy);bx.lineTo(wx+ww-5,yy);bx.stroke();
+    for(let xx=wx+9;xx<wx+ww-6;xx+=15){
+      bx.fillStyle=(i%2)?'#e6523f':'#f2c33c';bx.beginPath();bx.arc(xx,yy,2.1,0,TAU);bx.fill();
+    }
+  }
+  // starting blocks, west end
+  for(let i=0;i<4;i++){
+    const by=wy+i*wh/4+wh/8;
+    bx.fillStyle='#f4f4f4';roundRect(bx,wx-8,by-4.5,10,9,2);bx.fill();
+    bx.fillStyle='#d94f3d';roundRect(bx,wx-7,by-3.2,8,2.4,1);bx.fill();
+  }
+  // water-volleyball net across the middle
+  bx.strokeStyle='rgba(60,50,35,.55)';bx.lineWidth=1.3;
+  bx.beginPath();bx.moveTo(cx+3,wy+2);bx.lineTo(cx+3,wy+wh-2);bx.stroke();
+  bx.strokeStyle='#f7f7f7';bx.lineWidth=1.8;
+  bx.beginPath();bx.moveTo(cx+3,wy+12);bx.lineTo(cx+3,wy+wh-12);bx.stroke();
+  bx.fillStyle='#ffd34d';bx.beginPath();bx.arc(cx+15,wy+30,4,0,TAU);bx.fill();
+  // swimmers doing laps
+  for(const [sx,sy,col] of [[cx-36,wy+wh*0.22,'#e8552f'],[cx+16,wy+wh*0.62,'#2f6fd0'],[cx-54,wy+wh*0.80,'#e8a13a']]){
+    bx.fillStyle='rgba(255,255,255,.45)';bx.beginPath();bx.arc(sx-10,sy,7,0,TAU);bx.fill();
+    bx.fillStyle=col;roundRect(bx,sx-7,sy-4,14,8,4);bx.fill();
+    bx.fillStyle='#e8b98d';bx.beginPath();bx.arc(sx+8,sy,3.4,0,TAU);bx.fill();
+    bx.strokeStyle='#e8b98d';bx.lineWidth=1.8;bx.beginPath();bx.moveTo(sx+6,sy-2);bx.lineTo(sx+12,sy-6);bx.stroke();
+  }
+  // ladder + lifebuoy
+  bx.strokeStyle='#e9edf0';bx.lineWidth=2;
+  bx.beginPath();bx.moveTo(wx+ww-14,wy+6);bx.lineTo(wx+ww-14,wy-10);bx.moveTo(wx+ww-6,wy+6);bx.lineTo(wx+ww-6,wy-10);bx.moveTo(wx+ww-14,wy-10);bx.lineTo(wx+ww-6,wy-10);bx.stroke();
+  bx.fillStyle='#ef6a45';bx.beginPath();bx.arc(wx+14,wy+wh-8,5,0,TAU);bx.fill();
+  bx.fillStyle='#f7f2e2';bx.beginPath();bx.arc(wx+14,wy+wh-8,2,0,TAU);bx.fill();
+
+  // fence
+  const fx0=cx-104,fy0=cy-78,fw=208,fh=148;
+  bx.strokeStyle='rgba(70,90,70,.45)';bx.lineWidth=1.2;
+  bx.beginPath();bx.moveTo(fx0,fy0);bx.lineTo(fx0+fw,fy0);bx.lineTo(fx0+fw,fy0+fh);bx.lineTo(fx0,fy0+fh);bx.closePath();bx.stroke();
+  for(let x=fx0;x<=fx0+fw;x+=26){
+    bx.beginPath();bx.moveTo(x,fy0);bx.lineTo(x,fy0-6);bx.stroke();
+    bx.beginPath();bx.moveTo(x,fy0+fh);bx.lineTo(x,fy0+fh+6);bx.stroke();
+  }
+  // loungers + parasols
+  for(const [lx,ly,c] of [[cx-92,cy+62,'#e8552f'],[cx+86,cy+62,'#2f8fbf'],[cx-92,cy-56,'#2f8fbf']]){
+    bx.fillStyle='#f7f2e2';roundRect(bx,lx-9,ly-4,18,9,3);bx.fill();
+    bx.fillStyle=c;bx.beginPath();bx.arc(lx,ly-12,7,0,TAU);bx.fill();
+    bx.strokeStyle='rgba(80,70,60,.5)';bx.lineWidth=1.2;bx.beginPath();bx.moveTo(lx,ly-6);bx.lineTo(lx,ly+4);bx.stroke();
+  }
+
+  plaque(bx,'🏊 সুইমিং পুল',1740,626,12);
+
+}
+function drawAmbulance(x,y,ang){
+  bx.save();bx.translate(x,y);bx.rotate(ang||0);
+  bx.fillStyle='rgba(0,0,0,.18)';roundRect(bx,-33,-13,66,30,7);bx.fill();
+  bx.fillStyle='#ffffff';roundRect(bx,-33,-15,66,28,6);bx.fill();
+  bx.strokeStyle='rgba(80,70,60,.35)';bx.lineWidth=1.6;roundRect(bx,-33,-15,66,28,6);bx.stroke();
+  bx.fillStyle='#e04a3c';roundRect(bx,-33,3,66,9,3);bx.fill();
+  bx.fillStyle='#ffffff';roundRect(bx,-9,-9,18,18,3);bx.fill();
+  bx.fillStyle='#e04a3c';roundRect(bx,-2.5,-6,5,12,1);bx.fill();roundRect(bx,-6,-2.5,12,5,1);bx.fill();
+  bx.fillStyle='#9fd4e8';roundRect(bx,17,-11,11,22,3);bx.fill();
+  bx.fillStyle='#2f6fd0';roundRect(bx,7,-14,10,3.5,1.5);bx.fill();
+  bx.fillStyle='#e04a3c';roundRect(bx,2,-14,5,3.5,1.5);bx.fill();
+  bx.fillStyle='#2b2b2b';roundRect(bx,-26,11,13,7,3);bx.fill();roundRect(bx,9,11,13,7,3);bx.fill();
+  bx.restore();
+}
+/* ── the bus stand south of the gate ── */
+function drawTerminal(){
+  const {x0,y0,x1,y1,aisleY,bayY}=TERM;
+  // grass verge + concrete apron
+  bx.fillStyle='#d8d2c0'; roundRect(bx,x0-14,y0-10,x1-x0+28,y1-y0+24,20); bx.fill();
+  bx.fillStyle='#a9a598'; roundRect(bx,x0,y0,x1-x0,y1-y0,16); bx.fill();
+  bx.fillStyle='#8f8d85'; roundRect(bx,x0+10,y0+8,x1-x0-20,y1-y0-16,12); bx.fill();
+  // paving joints
+  bx.strokeStyle='rgba(255,255,255,.10)'; bx.lineWidth=1.4;
+  for(let x=x0+40;x<x1;x+=90){ bx.beginPath(); bx.moveTo(x,y0+10); bx.lineTo(x,y1-10); bx.stroke(); }
+  // drive aisle
+  bx.fillStyle='#7c7a73'; roundRect(bx,x0+10,aisleY-26,x1-x0-20,52,10); bx.fill();
+  bx.save(); bx.strokeStyle='rgba(245,240,210,.55)'; bx.lineWidth=3; bx.setLineDash([22,18]);
+  bx.beginPath(); bx.moveTo(x0+30,aisleY); bx.lineTo(x1-30,aisleY); bx.stroke(); bx.restore();
+  // bay markings — twenty bays nose-in
+  for(const b of BUS_BAYS){
+    bx.strokeStyle='rgba(248,244,215,.75)'; bx.lineWidth=2.6;
+    bx.beginPath(); bx.moveTo(b.x-31,bayY-92); bx.lineTo(b.x-31,bayY+96); bx.stroke();
+    bx.beginPath(); bx.moveTo(b.x+31,bayY-92); bx.lineTo(b.x+31,bayY+96); bx.stroke();
+    // number on the tarmac
+    bx.save(); bx.font=FONT(11,700); bx.fillStyle='rgba(250,246,220,.55)';
+    bx.textAlign='center'; bx.textBaseline='middle';
+    bx.fillText(bn(BUS_BAYS.indexOf(b)+1),b.x,bayY+108); bx.restore();
+  }
+  // shelter: canopy + benches for the passengers
+  bx.save(); bx.globalAlpha=.22; bx.fillStyle='#1e3318';
+  roundRect(bx,1148,1566,486,44,12); bx.fill(); bx.restore();
+  bx.fillStyle='#e9dfc6'; roundRect(bx,1150,1556,470,30,8); bx.fill();
+  bx.strokeStyle='rgba(90,75,50,.35)'; bx.lineWidth=2; bx.stroke();
+  bx.fillStyle='#cf7a4a'; roundRect(bx,1150,1556,470,10,6); bx.fill();
+  for(const px of [1170,1300,1430,1560,1600]){
+    bx.fillStyle='#8a8072'; roundRect(bx,px-4,1584,8,32,3); bx.fill();
+  }
+  for(const bx0 of [1210,1370,1530]){
+    bx.fillStyle='#a98a5e'; roundRect(bx,bx0,1596,120,9,4); bx.fill();
+    bx.fillStyle='#7d6242'; bx.fillRect(bx0+8,1605,6,10); bx.fillRect(bx0+104,1605,6,10);
+  }
+  // big stand sign over the shelter
+  bx.fillStyle='#1f5f8f'; roundRect(bx,1180,1520,410,34,8); bx.fill();
+  bx.strokeStyle='rgba(255,255,255,.35)'; bx.lineWidth=2; bx.stroke();
+  bx.save(); bx.font=FONT(17,800); bx.fillStyle='#eaf6ff'; bx.textAlign='center'; bx.textBaseline='middle';
+  bx.fillText('🚌 রাবি বাস স্ট্যান্ড · ২০টি বাস',1385,1538); bx.restore();
+  // ticket counter
+  bx.fillStyle='#efe4c8'; roundRect(bx,2380,1560,120,60,8); bx.fill();
+  bx.fillStyle='#2f7d6a'; roundRect(bx,2380,1560,120,14,6); bx.fill();
+  bx.save(); bx.font=FONT(11,700); bx.fillStyle='#2d3c2a'; bx.textAlign='center'; bx.textBaseline='middle';
+  bx.fillText('টিকিট কাউন্টার',2440,1596); bx.restore();
+  // lamp posts either side
+  for(const lx of [910,1120,1700,1900,2300]){
+    bx.fillStyle='#4a4f52'; roundRect(bx,lx-3,1570,6,96,3); bx.fill();
+    bx.fillStyle='#ffe8a8'; bx.beginPath(); bx.arc(lx,1568,7,0,TAU); bx.fill();
+    bx.strokeStyle='#4a4f52'; bx.lineWidth=2; bx.beginPath(); bx.arc(lx,1568,7,0,TAU); bx.stroke();
+  }
+  // driveway arrows up to the gate
+  bx.save(); bx.fillStyle='rgba(248,244,215,.6)';
+  for(let y=1660;y<1840;y+=56){
+    bx.beginPath(); bx.moveTo(860,y-14); bx.lineTo(848,y+4); bx.lineTo(872,y+4); bx.closePath(); bx.fill();
+  }
+  bx.restore();
+}
+/* ── খাবারের গলি inside the south wall ── */
+function drawFoodStreet(){
+  // walkway the students stroll along
+  bx.fillStyle='#d9cdb2'; roundRect(bx,1060,1300,1470,20,8); bx.fill();
+  bx.fillStyle='#c9bda2'; roundRect(bx,1060,1304,1470,12,6); bx.fill();
+  FOOD_STALLS.forEach((f,i)=>{
+    const {x,y,w,h,c}=f;
+    // shadow
+    bx.save(); bx.globalAlpha=.2; bx.fillStyle='#1e3318';
+    roundRect(bx,x+6,y+10,w,h+6,8); bx.fill(); bx.restore();
+    // body + counter
+    bx.fillStyle='#f2e9d2'; roundRect(bx,x,y+12,w,h-12,6); bx.fill();
+    bx.strokeStyle='rgba(90,70,45,.3)'; bx.lineWidth=1.6; bx.stroke();
+    bx.fillStyle='#d8c9a6'; roundRect(bx,x+4,y+h-20,w-8,16,4); bx.fill();
+    bx.fillStyle=c; roundRect(bx,x+4,y+h-8,w-8,5,2); bx.fill();
+    // counter front: menu strips
+    bx.fillStyle='rgba(255,255,255,.85)';
+    for(let k=0;k<3;k++) bx.fillRect(x+12+k*22,y+h-18,17,6);
+    // cooking counter with steam and pots
+    bx.fillStyle='#5f5a52'; roundRect(bx,x+10,y+h-34,w-20,14,4); bx.fill();
+    bx.fillStyle='#3f4a52';
+    bx.beginPath(); bx.ellipse(x+w*0.34,y+h-36,9,4.2,0,0,TAU); bx.fill();
+    bx.beginPath(); bx.ellipse(x+w*0.66,y+h-36,7,3.4,0,0,TAU); bx.fill();
+    bx.fillStyle='#b8452f'; roundRect(bx,x+w*0.34-6,y+h-44,12,7,2); bx.fill();
+    for(let k=0;k<3;k++){
+      const px=x+16+k*((w-32)/2);
+      bx.save(); bx.globalAlpha=.42; bx.fillStyle='#ffffff';
+      bx.beginPath(); bx.arc(px,y+h-50-((T*9+i*7+k*11)%16)*0.6,4.2,0,TAU); bx.fill();
+      bx.beginPath(); bx.arc(px+3,y+h-58-((T*7+i*5+k*9)%14)*0.6,3.2,0,TAU); bx.fill();
+      bx.restore();
+    }
+    // drink bottles on the side shelf
+    for(let k=0;k<3;k++){
+      bx.fillStyle=['#2f8a6a','#c4553a','#2f6fb0'][k];
+      roundRect(bx,x+w-16,y+h-52+k*7,6,10,2); bx.fill();
+    }
+    // awning — striped, the stall's own colour
+    bx.fillStyle=c; roundRect(bx,x-4,y-2,w+8,18,5); bx.fill();
+    bx.fillStyle='rgba(255,255,255,.55)';
+    for(let k=0;k<Math.floor((w+8)/18);k++){ bx.fillRect(x-4+k*18,y-2,9,18); }
+    bx.fillStyle='rgba(0,0,0,.14)'; bx.fillRect(x-4,y+14,w+8,3);
+    // hanging signboard with the shop's name
+    const sy = (i%2? y-32 : y-18);
+    bx.save(); bx.font=FONT(10.6,800);
+    const tw=bx.measureText(f.n).width+16;
+    bx.fillStyle='rgba(255,255,255,.96)'; roundRect(bx,x+w/2-tw/2,sy,tw,19,5); bx.fill();
+    bx.strokeStyle='rgba(90,80,60,.35)'; bx.lineWidth=1.4; bx.stroke();
+    bx.fillStyle='#3a3628'; bx.textAlign='center'; bx.textBaseline='middle';
+    bx.fillText(f.n,x+w/2,sy+10); bx.restore();
+    // stools + crates
+    for(const sx of [x+16,x+34]){
+      bx.fillStyle='#b98a4e'; bx.beginPath(); bx.ellipse(sx,y+h+9,8,3.6,0,0,TAU); bx.fill();
+      bx.fillStyle='#8a6438'; bx.fillRect(sx-1.6,y+h+9,3.2,7);
+    }
+  });
+  // the two archways that say what this lane is
+  for(const ax of [1084,2506]){
+    bx.fillStyle='#7d6242'; roundRect(bx,ax-7,1250,14,96,4); bx.fill();
+    bx.fillStyle='#efe4c8'; roundRect(bx,ax-64,1236,128,26,8); bx.fill();
+    bx.strokeStyle='rgba(90,70,45,.35)'; bx.lineWidth=2; bx.stroke();
+    bx.fillStyle='#c4553a'; roundRect(bx,ax-58,1240,116,18,6); bx.fill();
+    bx.save(); bx.font=FONT(11.5,800); bx.fillStyle='#fff4e0';
+    bx.textAlign='center'; bx.textBaseline='middle';
+    bx.fillText('🍛 খাবারের গলি',ax,1249); bx.restore();
+  }
+  // picnic tables between the stalls
+  for(const [tx,ty] of [[1180,1290],[1690,1290],[2050,1290],[2350,1290]]){
+    bx.fillStyle='#b98a4e'; roundRect(bx,tx-26,ty,52,13,3); bx.fill();
+    bx.fillStyle='#8a6438'; roundRect(bx,tx-30,ty+11,60,7,3); bx.fill();
+    bx.fillStyle='#8a6438'; bx.fillRect(tx-20,ty+16,5,9); bx.fillRect(tx+15,ty+16,5,9);
+  }
+  // tea cart by the gate end of the street
+  bx.fillStyle='#c4553a'; roundRect(bx,2466,1360,84,34,6); bx.fill();
+  bx.fillStyle='#f2e9d2'; roundRect(bx,2470,1352,76,16,5); bx.fill();
+  bx.fillStyle='#20262f'; for(const wx of [2482,2540]){ bx.beginPath(); bx.arc(wx,1396,7,0,TAU); bx.fill(); }
+}
+function buildWorld(){
+  paintGrass();
+  paintRailway();
+  paintRoads();
+  paintPlazas();
+  const ordered=[...BLD].sort((a,b)=>(a.y+a.h)-(b.y+b.h));   // south-most last = on top
+  for(const b of ordered){
+    if(b.k==='mosque') drawMosque(b);
+    else if(b.k==='admin'){ /* drawn by drawAdminBuilding() below */ }
+    else drawBuilding(b);
+  }
+  drawParisRoadV(1050,1268,500);
+  drawFootballGround();
+  drawStadium(1288,733);
+  drawLoveChattar(LOVE.x,LOVE.y);
+  drawPoolComplex(1594,795);
+  drawAmbulance(1746,978);
+  drawShaheedMinar(1130,960);
+  drawMukta(1045,900);
+  drawMainGate(860,1418,'প্রধান ফটক');
+  drawGate(232,1352,'কাজলা গেট');
+  drawGate(1750,1352,'বিনোদপুর গেট');
+  drawStation();
+  plaque(bx,'🚉 রাজশাহী বিশ্ববিদ্যালয় স্টেশন',1490,262,13);
+  drawBoddhovumi(2000,470);
+  drawRoundabout(860,1238);
+  drawAdminBuilding(698,822,300);
+  plaque(bx,'প্যারিস রোড',500,1032,12);
+  drawFoodStreet();
+  drawTerminal();
+  drawBuildingLabels();
+  // Natore road label
+  plaque(bx,'নাটোর রোড',900,1524,12);
+  scatterTrees();
+  // boundary wall hatching
+  bx.save();bx.strokeStyle='rgba(90,80,60,.55)';bx.lineWidth=2;
+  const line=(x1,y1,x2,y2)=>{bx.beginPath();bx.moveTo(x1,y1);bx.lineTo(x2,y2);bx.stroke();};
+  const wallSeg=(x,y,w,h)=>{bx.strokeStyle='rgba(120,105,80,.5)';bx.strokeRect(x,y,w,h);
+    bx.fillStyle='rgba(200,185,150,.75)';bx.fillRect(x,y,w,h);};
+  wallSeg(40,1440,160,18);wallSeg(320,1440,470,18);wallSeg(930,1440,760,18);wallSeg(1810,1440,670,18);wallSeg(2480,1440,78,18);
+  wallSeg(40,300,1400,18);wallSeg(1560,300,980,18);
+  wallSeg(40,300,18,1140);wallSeg(2522,300,18,1140);
+  bx.restore();
+}
+
+/* ═══════════════════ atlas layer — the flat map you get when you zoom out ═══════════════════ */
+const mapBg=document.createElement('canvas'); mapBg.width=W; mapBg.height=H;
+const mapx=mapBg.getContext('2d');
+const MC={city:'#edece6',block:'#f5f3ec',campus:'#d9e8c4',campusIn:'#d3e4bb',
+  road:'#ffffff',roadE:'#e2ded2',trunk:'#fcf2cf',trunkE:'#e6dbab',
+  bld:'#f3efe5',bldE:'#d6d0c0',water:'#a8d7ef',waterE:'#84bedd'};
+function buildMapLayer(){
+  // town blocks around the campus
+  mapx.fillStyle=MC.city; mapx.fillRect(0,0,W,H);
+  mapx.fillStyle=MC.block;
+  for(let x=-40;x<W+200;x+=192) for(let y=-40;y<H+170;y+=158){
+    roundRect(mapx,x+10,y+10,160,126,8); mapx.fill();
+  }
+  // ponds in the neighbourhood
+  mapx.fillStyle=MC.water;
+  for(const [px,py,rx,ry] of [[318,1552,72,46],[118,1004,44,32],[2540,1140,52,36]]){
+    mapx.beginPath(); mapx.ellipse(px,py,rx,ry,0,0,TAU); mapx.fill();
+  }
+  // campus ground
+  mapx.beginPath(); roundRect(mapx,44,304,2492,1150,30); mapx.fillStyle=MC.campus; mapx.fill();
+  mapx.beginPath(); roundRect(mapx,150,392,2280,1000,24); mapx.fillStyle=MC.campusIn; mapx.fill();
+
+  // railway
+  mapx.fillStyle='#cfccc2'; mapx.fillRect(0,132,W,36);
+  mapx.strokeStyle='#ffffff'; mapx.lineWidth=3; mapx.setLineDash([18,15]);
+  mapx.beginPath(); mapx.moveTo(0,150); mapx.lineTo(W,150); mapx.stroke(); mapx.setLineDash([]);
+
+  // roads: casing first, then the bright surface
+  for(const r of ROADS){
+    const trunk=r.t==='natore', lane=r.t==='lane';
+    const g = trunk?4 : (lane?2.5:5);
+    mapx.fillStyle = trunk? MC.trunkE : MC.roadE;
+    roundRect(mapx,r.x-g,r.y-g,r.w+g*2,r.h+g*2, trunk?0:8); mapx.fill();
+    mapx.fillStyle = trunk? MC.trunk : MC.road;
+    roundRect(mapx,r.x,r.y,r.w,r.h, trunk?0:5); mapx.fill();
+  }
+
+  // building footprints
+  const footprint=(x,y,w,h,r)=>{
+    mapx.fillStyle='rgba(110,100,80,.13)'; roundRect(mapx,x+3,y+5,w,h,r); mapx.fill();
+    mapx.fillStyle=MC.bld; roundRect(mapx,x,y,w,h,r); mapx.fill();
+    mapx.strokeStyle=MC.bldE; mapx.lineWidth=1.8; roundRect(mapx,x,y,w,h,r); mapx.stroke();
+  };
+  for(const b of BLD) footprint(b.x,b.y,b.w,b.h, b.k==='mosque'?12:6);
+  footprint(548,686,300,136,12);            // প্রশাসন ভবন-১
+  footprint(1330,196,470,54,8);             // স্টেশন প্ল্যাটফর্ম
+
+  // stadium
+  mapx.beginPath(); mapx.ellipse(1288,733,202,130,0,0,TAU);
+  mapx.fillStyle='#e9e2d2'; mapx.fill(); mapx.strokeStyle='#d2c9b4'; mapx.lineWidth=3; mapx.stroke();
+  mapx.beginPath(); mapx.ellipse(1288,733,152,88,0,0,TAU);
+  mapx.fillStyle='#c6dda7'; mapx.fill(); mapx.strokeStyle='#aacb8b'; mapx.lineWidth=2; mapx.stroke();
+  mapx.fillStyle='#e8dbb6'; roundRect(mapx,1276,672,24,124,4); mapx.fill();
+
+  // swimming pool
+  mapx.fillStyle=MC.waterE; roundRect(mapx,1506,735,176,120,12); mapx.fill();
+  mapx.fillStyle=MC.water; roundRect(mapx,1514,743,160,104,9); mapx.fill();
+
+  // football ground
+  mapx.fillStyle='#c3dca3'; roundRect(mapx,FOOTBALL.x,FOOTBALL.y,FOOTBALL.w,FOOTBALL.h,5); mapx.fill();
+  mapx.strokeStyle='#ffffff'; mapx.lineWidth=3; roundRect(mapx,FOOTBALL.x,FOOTBALL.y,FOOTBALL.w,FOOTBALL.h,5); mapx.stroke();
+
+  // ইবলিশ পুকুর + plaza
+  mapx.fillStyle='#e3e0d1'; mapx.beginPath(); mapx.ellipse(400,1035,92,64,0,0,TAU); mapx.fill();
+  mapx.fillStyle=MC.waterE; mapx.beginPath(); mapx.ellipse(400,1035,78,51,0,0,TAU); mapx.fill();
+  mapx.fillStyle=MC.water;  mapx.beginPath(); mapx.ellipse(400,1035,72,46,0,0,TAU); mapx.fill();
+
+  // শহীদ মিনার plaza, বধ্যভূমি, রাউন্ডঅ্যাবাউট, ফটক
+  mapx.fillStyle='#e7e1d1'; mapx.beginPath(); mapx.arc(1130,960,94,0,TAU); mapx.fill();
+  mapx.fillStyle='#f6f3ea'; mapx.beginPath(); mapx.arc(1130,960,24,0,TAU); mapx.fill();
+  mapx.fillStyle='#e2ded0'; mapx.beginPath(); mapx.arc(2000,470,30,0,TAU); mapx.fill();
+  mapx.strokeStyle='#cdd8bd'; mapx.lineWidth=3; mapx.stroke();
+  mapx.fillStyle='#d3e3ba'; mapx.beginPath(); mapx.arc(860,1238,46,0,TAU); mapx.fill();
+  mapx.strokeStyle='#e5e1d4'; mapx.lineWidth=7; mapx.stroke();
+  for(const gx of [860,232,1750]){
+    mapx.fillStyle='#a4b391'; roundRect(mapx,gx-27,1436,54,26,6); mapx.fill();
+  }
+
+  // boundary wall
+  mapx.strokeStyle='#c7c1af'; mapx.lineWidth=7;
+  mapx.beginPath(); roundRect(mapx,40,300,2500,1158,26); mapx.stroke();
+
+  // the bus stand south of Natore Road
+  mapx.fillStyle='#d8d2c0'; roundRect(mapx,TERM.x0-14,TERM.y0-10,TERM.x1-TERM.x0+28,TERM.y1-TERM.y0+24,18); mapx.fill();
+  mapx.fillStyle='#a9a598'; roundRect(mapx,TERM.x0,TERM.y0,TERM.x1-TERM.x0,TERM.y1-TERM.y0,14); mapx.fill();
+  mapx.fillStyle='#7c7a73'; roundRect(mapx,TERM.x0+10,TERM.aisleY-26,TERM.x1-TERM.x0-20,52,10); mapx.fill();
+  for(const b of BUS_BAYS){
+    mapx.fillStyle='#e8e6df'; roundRect(mapx,b.x-26,b.y-14,52,84,6); mapx.fill();
+    mapx.strokeStyle='#ffffff'; mapx.lineWidth=1.4;
+    mapx.beginPath(); mapx.moveTo(b.x-31,b.y-92); mapx.lineTo(b.x-31,b.y+96); mapx.stroke();
+    mapx.beginPath(); mapx.moveTo(b.x+31,b.y-92); mapx.lineTo(b.x+31,b.y+96); mapx.stroke();
+  }
+  mapx.fillStyle='#e9dfc6'; roundRect(mapx,1150,1556,470,30,8); mapx.fill();
+  mapx.fillStyle='#1f5f8f'; roundRect(mapx,1180,1520,410,34,8); mapx.fill();
+  mapx.save(); mapx.font=FONT(15,800); mapx.fillStyle='#eaf6ff';
+  mapx.textAlign='center'; mapx.textBaseline='middle';
+  mapx.fillText('রাবি বাস স্ট্যান্ড · ২০টি বাস',1385,1538); mapx.restore();
+
+  // the food street: a row of shop units along the south wall
+  for(const f of FOOD_STALLS){
+    mapx.fillStyle='#f3efe5'; roundRect(mapx,f.x,f.y,f.w,f.h,5); mapx.fill();
+    mapx.strokeStyle='#d6d0c0'; mapx.lineWidth=1.6; roundRect(mapx,f.x,f.y,f.w,f.h,5); mapx.stroke();
+    mapx.fillStyle=f.c; roundRect(mapx,f.x,f.y,f.w,9,4); mapx.fill();
+  }
+  mapx.fillStyle='rgba(196,85,58,.14)'; roundRect(mapx,1060,1288,1470,58,10); mapx.fill();
+
+  // the campus name, like a printed atlas — tucked into the quiet south-east corner
+  mapx.save(); mapx.globalAlpha=.20; mapx.fillStyle='#456b3a';
+  mapx.font=FONT(30,800); mapx.textAlign='right'; mapx.textBaseline='middle';
+  mapx.fillText('রাজশাহী বিশ্ববিদ্যালয় · ৭৫৩ একর', 2466, 1370);
+  mapx.restore();
+}
+
+/* ── collectible campus memories (they fill the museum gallery) ── */
+const RELICS=[
+  {x:700,y:870,n:'পুরোনো লাইব্রেরি কার্ড'},
+  {x:1060,y:620,n:'ক্লাস রুটিনের কাগজ'},
+  {x:1500,y:962,n:'চায়ের কাপ'},
+  {x:2100,y:900,n:'হলের চাবি'},
+  {x:900,y:1180,n:'আমের আঁটি'},
+  {x:1850,y:700,n:'সাইকেলের ঘণ্টা'},
+  {x:2300,y:1100,n:'ক্যাম্পাসের ম্যাপ'},
+];
+let relicsGot=0;
+
+/* ═══════════════════ state ═══════════════════ */
+let zoom=1, zoomT=1, panX=0, panY=0, moveTarget=null, mouseWalkBlocked=0;
+let ZMIN=0.30; const ZMAX=1.8;   // zoomed right out you get the flat campus map
+let mapA=0;                       // 0 = drawn art, 1 = atlas view
+const PLAYER_LOOK={shirt:'#2f6fb0',shirtD:'#255a92',pants:'#2f3f58',pack:'#9a6b3f',books:false};
+const player={x:860,y:1300,vx:0,vy:0,dir:'up',phase:0,step:0,squash:1,moving:false};
+const cam={x:0,y:0};
+let shake=0,shakeSeed=0;
+const particles=[];
+const npcs=[];
+const found=new Set();
+let compassHold=null;
+const rideSaid=new Set();
+let nearId=null,nearVeh=null,ride=null,running=false,startedAt=0,elapsed=0,muted=false,cardOpen=false;
+let T=0;
+
+const buses=[];
+for(let i=0;i<20;i++){
+  const bay=BUS_BAYS[i];
+  buses.push({x:bay.x,y:bay.y,ang:bay.ang,route:null,i:0,
+    sp:104+ (i%4)*9, wait:0, type:'bus', stop:null, nextStop:null,
+    id:i, livery:i%3, parked:true, bay:{x:bay.x,y:bay.y,ang:bay.ang}});
+}
+const bus=buses[0];   // the first bus in the rank
+const ricks=[
+  {x:900,y:1245,ang:0,route:RICK_ROUTES[0],i:9,sp:72,type:'rick',c:'#2f7d4a'},
+  {x:2200,y:542,ang:Math.PI,route:RICK_ROUTES[1],i:1,sp:64,type:'rick',c:'#b8543a'},
+  {x:2450,y:900,ang:Math.PI,route:RICK_ROUTES[1],i:2,sp:58,type:'rick',c:'#3f6ea8'}
+];
+
+function spawnNPCs(){
+  const spots=[[860,1300],[1150,1238],[640,1238],[2000,1150],[1250,1160],[2100,1200],
+               [900,760],[1930,700],[300,1238],[188,900],[1900,1120],[2380,1000],
+               [1350,1080],[980,1080],[2260,780],
+               [1300,1310],[1560,1310],[2050,1310],[2320,1310],
+               [1200,1600],[1420,1600],[1760,1600],[2000,1600]];
+  spots.forEach((s,i)=>{
+    const look=STUDENT_LOOKS[i%STUDENT_LOOKS.length];
+    const n={
+      hx:s[0],hy:s[1],x:s[0]+rrange(-46,46),y:s[1]+rrange(-38,38),
+      tx:s[0],ty:s[1],sp:rrange(26,46),t:rrange(0,10),pause:0,
+      look, dir:'down', phase:rrange(0,6),
+      chat:null, chatT:rrange(2,14), bubble:0
+    };
+    npcs.push(n);
+    // some students walk in pairs — a friend trailing half a step behind
+    if(i%3===0){
+      npcs.push({hx:s[0]+26,hy:s[1]+22,x:s[0]+26+rrange(-30,30),y:s[1]+22+rrange(-26,26),
+        tx:s[0]+26,ty:s[1]+22,sp:n.sp*0.98,t:rrange(0,10),pause:0,
+        look:STUDENT_LOOKS[(i+5)%STUDENT_LOOKS.length],dir:'down',phase:rrange(0,6),
+        chat:null,chatT:rrange(6,20),bubble:0,follow:n});
+    }
+  });
+}
+
+/* ═══════════════════ audio ═══════════════════ */
+let actx=null;
+const audio=()=>{ if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}} return actx; };
+function tone(freq,dur,type,gain,delay){
+  if(muted)return; const a=audio(); if(!a)return;
+  const t0=a.currentTime+(delay||0),o=a.createOscillator(),g=a.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(freq,t0);
+  g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(gain||0.06,t0+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+(dur||0.15));
+  o.connect(g);g.connect(a.destination);o.start(t0);o.stop(t0+(dur||0.15)+0.05);
+}
+const sfxStep=()=>tone(150+Math.random()*50,0.05,'triangle',0.022);
+const sfxCollect=()=>{[523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,0.42,'sine',0.07,i*0.075));};
+const sfxOpen=()=>tone(660,0.09,'square',0.03);
+const sfxBoard=()=>{tone(300,0.12,'sawtooth',0.035);tone(450,0.16,'sine',0.04,0.08);};
+const sfxHorn=()=>{tone(370,0.5,'sawtooth',0.05);tone(466,0.5,'sawtooth',0.045);};
+const sfxWin=()=>{[523,659,784,1047,1319].forEach((f,i)=>tone(f,0.6,'sine',0.08,i*0.12));};
+const sfxBusHorn=()=>{ if(muted)return; tone(392,0.34,'square',0.03); tone(494,0.34,'square',0.024); };
+const sfxTrainHorn=()=>{ if(muted)return; tone(233,0.9,'triangle',0.05); tone(311,0.9,'triangle',0.038,0.03); };
+
+/* ── continuous bus engine (only while you ride a bus) ── */
+let eng=null, noiseBuf=null;
+function noiseBuffer(a){
+  if(noiseBuf) return noiseBuf;
+  const n=Math.floor(a.sampleRate*0.4), b=a.createBuffer(1,n,a.sampleRate), ch=b.getChannelData(0);
+  for(let i=0;i<n;i++) ch[i]=Math.random()*2-1;
+  noiseBuf=b; return b;
+}
+function startEngine(){
+  if(eng||muted) return;
+  const a=audio(); if(!a) return;
+  if(a.state==='suspended'){ try{a.resume();}catch(e){} }
+  const o=a.createOscillator(),g=a.createGain(),f=a.createBiquadFilter();
+  o.type='sawtooth'; o.frequency.value=56;
+  f.type='lowpass'; f.frequency.value=360; f.Q.value=0.8;
+  g.gain.value=0.0001;
+  o.connect(f); f.connect(g); g.connect(a.destination); o.start();
+  g.gain.linearRampToValueAtTime(0.05,a.currentTime+0.5);
+  eng={o,g,f};
+}
+function stopEngine(){
+  if(!eng) return;
+  const a=audio(), e=eng; eng=null; if(!a) return;
+  try{
+    e.g.gain.cancelScheduledValues(a.currentTime);
+    e.g.gain.linearRampToValueAtTime(0.0001,a.currentTime+0.28);
+    e.o.stop(a.currentTime+0.34);
+  }catch(_){}
+}
+function engineRumble(sp){
+  if(!eng) return; const a=audio(); if(!a) return;
+  eng.o.frequency.setTargetAtTime(46+sp*0.30,a.currentTime,0.18);
+  eng.f.frequency.setTargetAtTime(280+sp*1.5,a.currentTime,0.18);
+}
+function sfxClack(vol){
+  if(muted) return; const a=audio(); if(!a) return;
+  const src=a.createBufferSource(); src.buffer=noiseBuffer(a);
+  const f=a.createBiquadFilter(); f.type='bandpass'; f.frequency.value=820; f.Q.value=1.2;
+  const g=a.createGain(); const t0=a.currentTime;
+  g.gain.setValueAtTime(0.0001,t0);
+  g.gain.linearRampToValueAtTime(0.05*vol,t0+0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+0.1);
+  src.connect(f); f.connect(g); g.connect(a.destination);
+  src.start(t0); src.stop(t0+0.13);
+}
+/* every-frame world sound: bus engine, train pass-by, bus horn */
+let busHornT=7, trainClackT=0, trainHornT=4;
+function updateWorldAudio(dt){
+  // you're on the bus → engine hum follows its speed
+  if(ride&&ride.type==='bus'){ startEngine(); engineRumble(ride.sp*(ride.wait>0?0.15:1)); }
+  else stopEngine();
+
+  const px=ride?ride.x:player.x, py=ride?ride.y:player.y;
+
+  // a bus that passes you honks now and then
+  busHornT-=dt;
+  if(busHornT<=0 && !muted){
+    let bd=1e9;
+    for(const b of buses) bd=Math.min(bd,Math.hypot(b.x-px,b.y-py));
+    if(bd<250){ sfxBusHorn(); busHornT=9+Math.random()*7; } else busHornT=2;
+  }
+
+  // the train: wheel clatter + a long whistle, fading with distance
+  const tr=trains[0];
+  if(tr){
+    const d=Math.hypot(tr.x-px,150-py);
+    if(d<1560){
+      const near=clamp(1-d/1560,0.10,1);
+      trainClackT-=dt;
+      if(trainClackT<=0){ trainClackT=clamp(0.40-tr.sp*0.0011,0.11,0.34); sfxClack(near); }
+      trainHornT-=dt;
+      if(trainHornT<=0){ trainHornT=13+Math.random()*9; sfxTrainHorn(); }
+    } else trainHornT=Math.min(trainHornT,4);
+  }
+}
+
+/* ═══════════════════ বাংলা ভয়েস (speechSynthesis) ═══════════════════ */
+const SPEECH={enabled:true,voice:null,hasBn:false,warned:false,busy:false};
+function pickBnVoice(){
+  if(!('speechSynthesis' in window)) return;
+  let vs=[];
+  try{ vs=speechSynthesis.getVoices()||[]; }catch(e){ return; }
+  const bn = vs.find(v=>/^bn[-_]BD/i.test(v.lang))
+          || vs.find(v=>/^bn/i.test(v.lang))
+          || vs.find(v=>/bengali|bangla/i.test(v.name));
+  if(bn){ SPEECH.voice=bn; SPEECH.hasBn=true; }
+}
+if('speechSynthesis' in window){ pickBnVoice(); try{ speechSynthesis.onvoiceschanged=pickBnVoice; }catch(e){} }
+
+const capEl=document.getElementById('caption'), capText=document.getElementById('captionText');
+let capTimer=null;
+function showCaption(text,holdMs){
+  capText.textContent=text;
+  capEl.classList.add('on');
+  if(capTimer) clearTimeout(capTimer);
+  if(!holdMs) return;
+  capTimer=setTimeout(()=>capEl.classList.remove('on'),holdMs);
+}
+function hideCaptionSoon(ms){
+  if(capTimer) clearTimeout(capTimer);
+  capTimer=setTimeout(()=>capEl.classList.remove('on'),ms||900);
+}
+function stopSpeaking(){
+  if('speechSynthesis' in window){ try{ speechSynthesis.cancel(); }catch(e){} }
+  SPEECH.busy=false;
+}
+/* speaks the line and always shows it as a caption */
+function speak(text,opts){
+  opts=opts||{};
+  showCaption(text,0);
+  capEl.classList.toggle('quiet', muted || !SPEECH.enabled || !SPEECH.hasBn);
+  if(muted || !SPEECH.enabled || !text) { hideCaptionSoon(opts.hold||2200); return; }
+  if(!('speechSynthesis' in window)){ hideCaptionSoon(opts.hold||2600); return; }
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang = SPEECH.voice ? SPEECH.voice.lang : 'bn-BD';
+    if(SPEECH.voice) u.voice=SPEECH.voice;
+    u.rate = opts.rate || 0.97;
+    u.pitch = opts.pitch || 1.02;
+    u.onend = ()=>{ SPEECH.busy=false; hideCaptionSoon(opts.hold||900); };
+    u.onerror= ()=>{ SPEECH.busy=false; hideCaptionSoon(opts.hold||1600); };
+    SPEECH.busy=true;
+    speechSynthesis.speak(u);
+  }catch(e){ hideCaptionSoon(opts.hold||2400); }
+  if(opts.hold) hideCaptionSoon(Math.max(opts.hold, text.length*90));
+}
+/* one-time hint if the browser has no Bengali voice installed */
+function voiceNotice(){
+  if(SPEECH.hasBn || SPEECH.warned) return;
+  SPEECH.warned=true;
+  setTimeout(()=>{
+    showCaption('বাংলা ভয়েস পাওয়া যায়নি — লেখায় সব কিছু দেখানো হচ্ছে।',3600);
+  },1200);
+}
+
+/* ═══════════════════ input ═══════════════════ */
+const keys=new Set(), touchVec={x:0,y:0};
+window.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k)) e.preventDefault();
+  keys.add(k);
+  if(k==='e'||k===' '||k==='enter') action();
+  if(k==='escape') closeCard();
+  if(k==='m') toggleMute();
+});
+window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
+window.addEventListener('blur',()=>keys.clear());
+
+const joy=document.getElementById('joy'),knob=document.getElementById('knob');
+let joyId=null;
+joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(e.pointerId);joyMove(e);});
+joy.addEventListener('pointermove',joyMove);
+joy.addEventListener('pointerup',e=>{if(joyId===e.pointerId){joyId=null;knockHome();}});
+joy.addEventListener('pointercancel',e=>{if(joyId===e.pointerId){joyId=null;knockHome();}});
+function joyMove(e){
+  if(joyId!==e.pointerId)return;
+  const r=joy.getBoundingClientRect();
+  let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  const max=r.width/2-14,d=Math.hypot(dx,dy);
+  if(d>max){dx=dx/d*max;dy=dy/d*max;}
+  knob.style.transform=`translate(${dx}px,${dy}px)`;
+  touchVec.x=dx/max;touchVec.y=dy/max;
+}
+function knockHome(){knob.style.transform='translate(0,0)';touchVec.x=0;touchVec.y=0;}
+if(matchMedia('(pointer: coarse)').matches) document.getElementById('touch').classList.add('on');
+
+/* ─────── mouse: click to walk · drag to pan · wheel to zoom ─────── */
+const cvs=document.getElementById('game');
+function screenToWorld(cxp,cyp){
+  return {x:cam.x + vw/2 + (cxp - vw/2)/zoom,
+          y:cam.y + vh/2 + (cyp - vh/2)/zoom};
+}
+let drag=null;
+cvs.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  drag={id:e.pointerId,x:e.clientX,y:e.clientY,cx:e.clientX,cy:e.clientY,moved:0,mode:'idle'};
+  cvs.setPointerCapture(e.pointerId);
+  cvs.style.cursor='grabbing';
+});
+cvs.addEventListener('pointermove',e=>{
+  if(!drag||drag.id!==e.pointerId) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  drag.x=e.clientX; drag.y=e.clientY;
+  drag.moved+=Math.hypot(dx,dy);
+  if(drag.moved>7){
+    drag.mode='pan';
+    panX-=dx/zoom; panY-=dy/zoom;
+    moveTarget=null;
+  }
+});
+cvs.addEventListener('pointerup',e=>{
+  if(!drag||drag.id!==e.pointerId) return;
+  const wasClick=drag.moved<=7;
+  drag=null; cvs.style.cursor='grab';
+  if(!wasClick||!running||cardOpen) return;
+  const w=screenToWorld(e.clientX,e.clientY);
+  // clicking a vehicle or landmark you are next to = interact
+  const v=nearestVehicle();
+  if(v && Math.hypot(w.x-v.x,w.y-v.y)<64){ mount(v); return; }
+  const lm=LANDMARKS.find(l=>Math.hypot(w.x-l.x,w.y-l.y)<l.r);
+  if(lm && Math.hypot(lm.x-player.x,lm.y-player.y)<lm.r){ nearId=lm.id; openCard(); return; }
+  moveTarget={x:w.x,y:w.y,stuck:0};
+  burst(w.x,w.y,4);
+  tone(520,0.05,'sine',0.02);
+});
+cvs.addEventListener('pointercancel',()=>{drag=null;cvs.style.cursor='grab';});
+cvs.style.cursor='grab';
+window.addEventListener('wheel',e=>{
+  if(e.target.closest && e.target.closest('.sheet, .overlay')) return;
+  if(!running) return;
+  e.preventDefault();
+  zoomT=clamp(zoomT*(e.deltaY<0?1.14:0.877),ZMIN,ZMAX);
+},{passive:false});
+
+/* pinch-to-zoom on touch screens */
+const ptrs=new Map(); let pinch=null;
+cvs.addEventListener('pointerdown',e=>{
+  if(e.pointerType!=='touch') return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){
+    drag=null;
+    const [a,b]=[...ptrs.values()];
+    pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,z:zoomT};
+  }
+});
+cvs.addEventListener('pointermove',e=>{
+  if(e.pointerType!=='touch'||!ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&ptrs.size>=2){
+    const [a,b]=[...ptrs.values()];
+    const d=Math.hypot(a.x-b.x,a.y-b.y)||1;
+    zoomT=clamp(pinch.z*(d/pinch.d),ZMIN,ZMAX);
+  }
+});
+for(const ev of ['pointerup','pointercancel']){
+  cvs.addEventListener(ev,e=>{
+    if(e.pointerType!=='touch') return;
+    ptrs.delete(e.pointerId);
+    if(ptrs.size<2) pinch=null;
+  });
+}
+window.addEventListener('keydown',e=>{
+  if(e.key==='c'||e.key==='C'){ panX=0;panY=0;zoomT=1; }
+});
+
+/* ═══════════════════ UI ═══════════════════ */
+const el={
+  stamps:document.getElementById('stamps'),pcount:document.getElementById('pcount'),
+  hint:document.getElementById('hint'),hintText:document.getElementById('hintText'),
+  cnear:document.getElementById('cnear'),cdist:document.getElementById('cdist'),arrow:document.getElementById('arrow'),
+  card:document.getElementById('card'),cardIcon:document.getElementById('cardIcon'),cardName:document.getElementById('cardName'),
+  cardEn:document.getElementById('cardEn'),cardFact:document.getElementById('cardFact'),cardProg:document.getElementById('cardProg'),
+  win:document.getElementById('win'),winStats:document.getElementById('winStats'),winList:document.getElementById('winList'),
+  start:document.getElementById('start'),act:document.getElementById('act'),mute:document.getElementById('mute')
+};
+LANDMARKS.forEach(l=>{
+  const d=document.createElement('div');d.className='stamp';d.id='st_'+l.id;d.textContent=l.icon;d.title=l.name;
+  el.stamps.appendChild(d);
+});
+const refreshPassport=()=>{
+  el.pcount.textContent=bn(found.size);
+  LANDMARKS.forEach(l=>document.getElementById('st_'+l.id).classList.toggle('got',found.has(l.id)));
+};
+document.getElementById('ptotal').textContent=bn(LANDMARKS.length);
+const _lmTotal=document.getElementById('lmtotal'); if(_lmTotal) _lmTotal.textContent=bn(LANDMARKS.length);
+refreshPassport();
+function toggleMute(){
+  muted=!muted;
+  el.mute.textContent=muted?'🔇':'🔊';
+  if(muted){ stopSpeaking(); stopEngine(); }
+  else { sfxOpen(); showCaption('ভয়েস চালু',1400); if(ride&&ride.type==='bus') startEngine(); }
+}
+el.mute.addEventListener('click',toggleMute);
+
+/* on-screen zoom buttons — easy in/out on any device */
+const zinBtn=document.getElementById('zin'), zoutBtn=document.getElementById('zout');
+zinBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();
+  zoomT=clamp(zoomT*1.24,ZMIN,ZMAX); tone(660,0.06,'sine',0.02);});
+zoutBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();
+  zoomT=clamp(zoomT/1.24,ZMIN,ZMAX); tone(520,0.06,'sine',0.02);});
+document.getElementById('zmap').onclick=()=>{
+  const fit=clamp(Math.min(vw/W,vh/H)*0.97,ZMIN,ZMAX);
+  const toMap = zoomT > (fit+0.05);
+  zoomT = toMap ? fit : 1;
+  panX=0; panY=0;
+  tone(toMap?700:520,0.07,'sine',0.02);
+};
+
+function openCard(){
+  if(!running||cardOpen||!nearId)return;
+  const l=LANDMARKS.find(x=>x.id===nearId);if(!l)return;
+  cardOpen=true;
+  if(l.id==='museum' && relicsGot<RELICS.length){
+    el.cardIcon.textContent=l.icon;
+    el.cardName.textContent=l.name;
+    el.cardEn.textContent=l.en;
+    el.cardFact.textContent=`গ্যালারির দরজা এখনো বন্ধ — ক্যাম্পাসে ছড়িয়ে থাকা ${bn(RELICS.length)}টি "স্মৃতি" সংগ্রহ করো, তারপর সংগ্রহশালা খুলবে। এখন পাওয়া গেছে: ${bn(relicsGot)} / ${bn(RELICS.length)}।`;
+    el.cardProg.textContent=`স্মৃতি: ${bn(relicsGot)} / ${bn(RELICS.length)} — বাকি ${bn(RELICS.length-relicsGot)}টি`;
+    el.card.classList.remove('hidden');
+    sfxOpen();
+    return;
+  }
+  el.cardIcon.textContent=l.icon;el.cardName.textContent=l.name;el.cardEn.textContent=l.en;
+  el.cardFact.textContent=l.fact;
+  el.cardProg.textContent=`পাসপোর্ট: ${bn(found.size)} / ${bn(LANDMARKS.length)}`;
+  el.card.classList.remove('hidden');sfxOpen();
+  speak(l.fact,{hold:Math.max(5000,l.fact.length*105)});
+  if(!found.has(l.id)){
+    found.add(l.id);
+    const st=document.getElementById('st_'+l.id);
+    st.classList.add('got','pop');setTimeout(()=>st.classList.remove('pop'),260);
+    refreshPassport();sfxCollect();burst(l.x,l.y-24,26);
+    shake=Math.max(shake,8);shakeSeed=Math.random()*100;
+    el.cardProg.textContent=`পাসপোর্ট: ${bn(found.size)} / ${bn(LANDMARKS.length)} — নতুন সিল! ✓`;
+    if(found.size===LANDMARKS.length) setTimeout(winGame,900);
+  }
+}
+function closeCard(){
+  if(!cardOpen)return;cardOpen=false;el.card.classList.add('hidden');knockHome();tone(420,0.08,'sine',0.03);
+}
+document.getElementById('cardClose').addEventListener('click',closeCard);
+document.getElementById('cardSpeak').addEventListener('click',()=>{
+  const l=LANDMARKS.find(x=>x.id===nearId); if(!l) return;
+  const txt=el.cardFact.textContent;
+  speak(txt,{hold:Math.max(4500,txt.length*105)});
+});
+el.card.addEventListener('click',e=>{if(e.target===el.card)closeCard();});
+
+function pickContext(){
+  if(ride) return {type:'ride'};
+  const v=nearestVehicle();
+  let lm=null,ld=1e9;
+  if(nearId){ lm=LANDMARKS.find(x=>x.id===nearId); if(lm) ld=Math.hypot(lm.x-player.x,lm.y-player.y); }
+  const vd=v?Math.hypot(v.x-player.x,v.y-player.y):1e9;
+  if(lm&&ld<=vd) return {type:'landmark',l:lm};
+  if(v) return {type:v.type,v};
+  if(lm) return {type:'landmark',l:lm};
+  return null;
+}
+function action(){
+  if(!running||cardOpen)return;
+  const c=pickContext();
+  if(!c) return;
+  if(c.type==='ride'){ dismount(); return; }
+  if(c.type==='landmark'){ openCard(); return; }
+  mount(c.v);
+}
+el.act.addEventListener('click',action);
+
+/* ═══════════════════ particles ═══════════════════ */
+function burst(x,y,n){
+  for(let i=0;i<n;i++){
+    const a=Math.random()*TAU,sp=60+Math.random()*220;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-60,life:0,max:.9+Math.random()*.7,
+      size:3+Math.random()*4,col:['#8ee04a','#ffc44d','#ff7a59','#5fd8e8','#fdf6e6'][i%5],
+      rot:Math.random()*TAU,vr:(Math.random()-.5)*10,type:'confetti'});
+  }
+}
+function dust(x,y){
+  particles.push({x:x+rrange(-6,6),y:y+rrange(-2,4),vx:rrange(-18,18),vy:rrange(-26,-6),
+    life:0,max:.5,size:rrange(2,5),col:'rgba(210,200,170,.85)',rot:0,vr:0,type:'dust'});
+}
+function updateParticles(dt){
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];p.life+=dt;
+    if(p.life>=p.max){particles.splice(i,1);continue;}
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.type==='confetti'){p.vy+=620*dt;p.vx*=.985;p.rot+=p.vr*dt;}
+    else{p.vy-=20*dt;p.vx*=.94;}
+  }
+}
+
+/* ═══════════════════ movement ═══════════════════ */
+const PR=13;
+function resolveCollisions(p){
+  for(let it=0;it<2;it++){
+    // a parked bus is an obstacle too (70×168 box, angle-aware enough at bay angles)
+    for(const b of buses){
+      if(!b.parked) continue;
+      const hw=34,hh=86, cx=clamp(p.x,b.x-hw,b.x+hw), cy=clamp(p.y,b.y-hh,b.y+hh);
+      let dx=p.x-cx,dy=p.y-cy,d2=dx*dx+dy*dy;
+      if(d2>=PR*PR) continue;
+      if(d2>0.0001){const d=Math.sqrt(d2);p.x=cx+dx/d*PR;p.y=cy+dy/d*PR;}
+      else p.y=b.y-hh-PR;
+    }
+    for(const s of SOLIDS){
+      const cx=clamp(p.x,s.x,s.x+s.w),cy=clamp(p.y,s.y,s.y+s.h);
+      let dx=p.x-cx,dy=p.y-cy,d2=dx*dx+dy*dy;
+      if(d2>=PR*PR)continue;
+      if(d2>0.0001){const d=Math.sqrt(d2);p.x=cx+dx/d*PR;p.y=cy+dy/d*PR;}
+      else{
+        const l=p.x-s.x,r=s.x+s.w-p.x,t=p.y-s.y,b=s.y+s.h-p.y,m=Math.min(l,r,t,b);
+        if(m===l)p.x=s.x-PR;else if(m===r)p.x=s.x+s.w+PR;else if(m===t)p.y=s.y-PR;else p.y=s.y+s.h+PR;
+      }
+    }
+  }
+  p.x=clamp(p.x,PR,W-PR);p.y=clamp(p.y,PR,H-PR);
+}
+function updatePlayer(dt){
+  if(ride){
+    player.x=ride.x;player.y=ride.y;
+    player.moving=false;player.phase+=dt*4;
+    return;
+  }
+  let ix=0,iy=0;
+  const keyMove=keys.has('a')||keys.has('arrowleft')||keys.has('d')||keys.has('arrowright')||
+                keys.has('w')||keys.has('arrowup')||keys.has('s')||keys.has('arrowdown')||
+                Math.hypot(touchVec.x,touchVec.y)>0.15;
+  if(keyMove) moveTarget=null;
+  if(moveTarget){
+    const dx=moveTarget.x-player.x, dy=moveTarget.y-player.y, d=Math.hypot(dx,dy);
+    if(d<14){ moveTarget=null; }
+    else { ix=dx/d; iy=dy/d; }
+  }
+  if(keys.has('a')||keys.has('arrowleft'))ix-=1;
+  if(keys.has('d')||keys.has('arrowright'))ix+=1;
+  if(keys.has('w')||keys.has('arrowup'))iy-=1;
+  if(keys.has('s')||keys.has('arrowdown'))iy+=1;
+  ix+=touchVec.x;iy+=touchVec.y;
+  const mag=Math.hypot(ix,iy);if(mag>1){ix/=mag;iy/=mag;}
+  const SPEED=250,k=Math.min(1,dt*14);
+  player.vx=lerp(player.vx,ix*SPEED,k);player.vy=lerp(player.vy,iy*SPEED,k);
+  player.x+=player.vx*dt;player.y+=player.vy*dt;
+  resolveCollisions(player);
+  player.step=Math.min(player.step,60);
+  if(moveTarget){
+    const before=Math.hypot(moveTarget.x-player.x,moveTarget.y-player.y);
+    if(before<14) moveTarget=null;
+    else {
+      moveTarget.lastD=moveTarget.lastD===undefined?before:moveTarget.lastD;
+      if(before>moveTarget.lastD-0.35) moveTarget.stuck=(moveTarget.stuck||0)+dt;
+      else moveTarget.stuck=0;
+      moveTarget.lastD=before;
+      if(moveTarget.stuck>0.55) moveTarget=null;
+    }
+  }
+  const sp=Math.hypot(player.vx,player.vy);
+  player.moving=sp>18;
+  if(player.moving){
+    if(Math.abs(player.vx)>Math.abs(player.vy)) player.dir=player.vx>0?'right':'left';
+    else player.dir=player.vy>0?'down':'up';
+    player.phase+=dt*sp*0.055;
+    player.step+=dt*sp;
+    if(player.step>58){player.step=0;dust(player.x,player.y+10);sfxStep();}
+    player.squash=lerp(player.squash,1+Math.min(.08,sp/3200),Math.min(1,dt*10));
+  }else{
+    player.phase+=dt*1.2;
+    player.squash=lerp(player.squash,1,Math.min(1,dt*8));
+  }
+}
+function busGapFactor(v){
+  let gapB=1e9,gapR=1e9;
+  for(const o of buses){
+    if(o===v) continue;
+    const dx=o.x-v.x,dy=o.y-v.y,d=Math.hypot(dx,dy);
+    if(d>165) continue;
+    if(dx*Math.cos(v.ang)+dy*Math.sin(v.ang)<=0) continue;   // only the one in front
+    if(d<gapB) gapB=d;
+  }
+  for(const o of ricks){
+    const dx=o.x-v.x,dy=o.y-v.y,d=Math.hypot(dx,dy);
+    if(d>140) continue;
+    if(dx*Math.cos(v.ang)+dy*Math.sin(v.ang)<=0) continue;
+    if(d<gapR) gapR=d;
+  }
+  const k1 = gapB>=150 ? 1 : clamp((gapB-88)/62,0,1);
+  const k2 = gapR>=140 ? 1 : clamp((gapR-80)/60,0,1);
+  // and for a student who happens to be standing in the lane
+  let k3=1;
+  const ca=Math.cos(v.ang), sa=Math.sin(v.ang);
+  for(const n of npcs){
+    const dx=n.x-v.x, dy=n.y-v.y;
+    const fwd=dx*ca+dy*sa;
+    if(fwd<8||fwd>72) continue;
+    if(Math.abs(-dx*sa+dy*ca)>26) continue;
+    k3=Math.min(k3,clamp((fwd-26)/40,0.12,1));
+  }
+  return Math.min(k1,k2,k3);
+}
+function rickGapFactor(v){
+  // give way to a bus that is actually in our lane ahead — crossing traffic
+  // at an intersection is left alone so the rickshaw never stalls for ever
+  let gap=1e9;
+  const ca=Math.cos(v.ang), sa=Math.sin(v.ang);
+  for(const o of buses){
+    const dx=o.x-v.x, dy=o.y-v.y, d=Math.hypot(dx,dy);
+    if(d>140) continue;
+    const fwd=dx*ca+dy*sa, lat=Math.abs(-dx*sa+dy*ca);
+    if(fwd<-12) continue;                       // behind us
+    if(lat>72 && fwd>40) continue;              // broadside: no risk
+    if(d<50 || fwd<130) gap=Math.min(gap,d);
+  }
+  return gap>=124 ? 1 : clamp((gap-70)/54,0,1);
+}
+function updateVehicle(v,dt){
+  if(v.type==='bus'&&(v.parked||!v.route)) return;
+  if(v.type==='rick'&&v.tourMode&&tour.active){
+    const tgt=TOUR_ROUTE[tour.i];
+    const dx=tgt.x-v.x, dy=tgt.y-v.y, d=Math.hypot(dx,dy);
+    const want=Math.atan2(dy,dx);
+    let diff=((want-v.ang+Math.PI*3)%TAU)-Math.PI;
+    v.ang+=clamp(diff,-dt*2.4,dt*2.4);
+    if(d>16){ const ts=86*Math.max(0.38,rickGapFactor(v)); v.x+=Math.cos(v.ang)*ts*dt; v.y+=Math.sin(v.ang)*ts*dt; }
+    return;
+  }
+  if(v.wait>0){v.wait-=dt;return;}
+  const tgt=v.route[v.i];
+  const dx=tgt.x-v.x,dy=tgt.y-v.y,d=Math.hypot(dx,dy);
+  const want=Math.atan2(dy,dx);
+  let diff=((want-v.ang+Math.PI*3)%TAU)-Math.PI;
+  v.ang+=clamp(diff,-dt*3.4,dt*3.4);
+  const slack=(v.type==='bus'&&v.stop)?70:22;
+  if(d<=slack){
+    if(v.type==='bus'&&v.i>=v.route.length-1){     // back in the bay
+      v.parked=true; v.x=v.bay.x; v.y=v.bay.y; v.ang=v.bay.ang; v.route=null; v.i=0;
+      return;
+    }
+    v.i=(v.i+1)%v.route.length; return;
+  }
+  let sp=v.sp*(v.type==='bus'?1:0.9);
+  sp*= v.type==='bus' ? busGapFactor(v) : rickGapFactor(v);
+  v.x+=Math.cos(v.ang)*sp*dt;v.y+=Math.sin(v.ang)*sp*dt;
+  if(v.type==='bus'){
+    for(const s of BUS_STOPS){
+      if(Math.hypot(v.x-s.x,v.y-s.y)<46 && v.stop!==s.n){
+        v.stop=s.n; v.wait=2.6; v.nextStop=s.n;
+        if(ride===v){ sfxHorn(); }
+        break;
+      }
+    }
+  }
+  if(v.type==='bus'&&distanceToNearestStop(v)>150) v.stop=null;
+}
+function distanceToNearestStop(v){
+  let m=1e9;for(const s of BUS_STOPS)m=Math.min(m,Math.hypot(v.x-s.x,v.y-s.y));return m;
+}
+function separateVehicles(){
+  // hard guarantee: no two vehicles ever occupy the same patch of road
+  const V=[...buses,...ricks];
+  for(let i=0;i<V.length;i++){
+    for(let j=i+1;j<V.length;j++){
+      const a=V[i], b=V[j];
+      const minD=(a.type==='bus'&&b.type==='bus')?96:(a.type==='bus'||b.type==='bus')?74:46;
+      let dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy);
+      if(d>=minD) continue;
+      if(d<0.01){ dx=1; dy=0; d=1; }
+      const push=(minD-d);
+      const ux=dx/d, uy=dy/d;
+      // the parked / slower one takes the shove
+      const aMov=!(a.type==='bus'&&a.parked), bMov=!(b.type==='bus'&&b.parked);
+      if(aMov&&bMov){ a.x-=ux*push*.5; a.y-=uy*push*.5; b.x+=ux*push*.5; b.y+=uy*push*.5; }
+      else if(aMov){ a.x-=ux*push; a.y-=uy*push; }
+      else if(bMov){ b.x+=ux*push; b.y+=uy*push; }
+    }
+  }
+}
+function separateCrowd(){
+  const MIN=17;
+  for(let i=0;i<npcs.length;i++){
+    const a=npcs[i];
+    for(let j=i+1;j<npcs.length;j++){
+      const b=npcs[j];
+      let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
+      if(d>=MIN) continue;
+      if(d<0.001){ dx=Math.random()-.5; dy=Math.random()-.5; d=Math.hypot(dx,dy); }
+      const push=(MIN-d)*.5, ux=dx/d, uy=dy/d;
+      if(!a.follow){ a.x-=ux*push; a.y-=uy*push; }
+      if(!b.follow){ b.x+=ux*push; b.y+=uy*push; }
+    }
+  }
+  // people step aside for a moving vehicle (buses are long — use a box, not a dot)
+  const veh=[];
+  for(const b of buses) veh.push({x:b.x,y:b.y,r:b.parked?30:46,bus:true,ang:b.ang});
+  for(const r of ricks) veh.push({x:r.x,y:r.y,r:34});
+  for(const n of npcs){
+    for(const v of veh){
+      if(v.bus){
+        // push out of the bus's lengthwise keep-out box
+        const ca=Math.cos(v.ang), sa=Math.sin(v.ang);
+        const rx=n.x-v.x, ry=n.y-v.y;
+        const fwd=rx*ca+ry*sa, lat=-rx*sa+ry*ca;
+        const LF=64+18, LT=26+14;            // half length / half width + margin
+        if(Math.abs(fwd)<LF&&Math.abs(lat)<LT){
+          const oF=LF-Math.abs(fwd), oL=LT-Math.abs(lat);
+          if(oF<oL){ const sgn=fwd>=0?1:-1; n.x+=ca*sgn*oF; n.y+=sa*sgn*oF; }
+          else { const sgn=lat>=0?1:-1; n.x+=-sa*sgn*oL; n.y+=ca*sgn*oL; }
+          n.tx=n.x; n.ty=n.y;
+        }
+        continue;
+      }
+      const dx=n.x-v.x,dy=n.y-v.y,d=Math.hypot(dx,dy);
+      if(d<v.r&&d>0.01){ n.x+=dx/d*(v.r-d); n.y+=dy/d*(v.r-d); n.tx=n.x; n.ty=n.y; }
+    }
+    // the plaza belongs to the couples
+    const pdx=n.x-LOVE.x, pdy=n.y-LOVE.y, pd=Math.hypot(pdx,pdy);
+    if(pd<118&&pd>0.01){ n.x+=pdx/pd*(118-pd); n.y+=pdy/pd*(118-pd); n.tx=n.x; n.ty=n.y; }
+  }
+  // and nobody stands on top of the player
+  if(!ride){
+    for(const n of npcs){
+      const dx=n.x-player.x, dy=n.y-player.y, d=Math.hypot(dx,dy);
+      if(d<13 && d>0.01){ n.x+=dx/d*(13-d); n.y+=dy/d*(13-d); }
+    }
+  }
+}
+function updateNPCs(dt){
+  for(const n of npcs){
+    let tx=n.tx,ty=n.ty;
+    if(n.follow){ tx=n.follow.x+Math.cos(n.follow.t*0.4)*26; ty=n.follow.y+22; }
+    const d=Math.hypot(tx-n.x,ty-n.y);
+    if(d<10){
+      n.pause-=dt;
+      if(n.pause<=0&&!n.follow){
+        n.tx=clamp(n.hx+rrange(-150,150),50,W-50);
+        n.ty=clamp(n.hy+rrange(-130,130),330,H-40);
+        n.pause=rrange(.5,2.6);
+      }
+      n.phase+=dt*1.2;
+    }else{
+      n.x+=(tx-n.x)/d*n.sp*dt; n.y+=(ty-n.y)/d*n.sp*dt;
+      n.t+=dt*7; n.phase+=dt*5.4;
+      if(Math.abs(tx-n.x)>Math.abs(ty-n.y)) n.dir = tx>n.x?'right':'left';
+      else n.dir = ty>n.y?'down':'up';
+    }
+    // idle chatter
+    n.chatT-=dt;
+    if(n.chatT<=0){
+      n.chatT=rrange(14,34);
+      if(Math.random()<0.45){ n.chat=CHATTER[Math.floor(Math.random()*CHATTER.length)]; n.bubble=3.2; }
+    }
+    if(n.bubble>0) n.bubble-=dt;
+  }
+}
+
+/* ═══════════════════ vehicles I/O ═══════════════════ */
+function nearestVehicle(){
+  const cands=[
+    ...buses.map(b=>({v:b,d:Math.hypot(player.x-b.x,player.y-b.y)})),
+    ...ricks.map(r=>({v:r,d:Math.hypot(player.x-r.x,player.y-r.y)}))
+  ].sort((a,b)=>a.d-b.d);
+  return cands[0].d<58?cands[0].v:null;
+}
+function mount(v){
+  if(v.type==='rick'&&v===ricks[0]&&!ride){ startTour(); burst(v.x,v.y-6,10); return; }
+  ride=v;player.vx=0;player.vy=0;
+  if(v.type==='rick') v.tourMode=false;
+  if(v.type==='bus'&&v.parked){        // the bus pulls out of its bay and does the loop
+    v.parked=false; v.route=makeBusRoute(v.bay); v.i=0; v.stop=null; v.nextStop='রাবি বাস স্ট্যান্ড';
+  }
+  sfxBoard();tone(v.type==='bus'?392:330,0.18,'sine',0.05,0.06);
+  if(v.type==='bus'){ startEngine(); sfxBusHorn(); }
+  burst(v.x,v.y-6,10);
+}
+function dismount(){
+  if(!ride)return;
+  const v=ride;
+  if(tour.active){ endTour(); speak('ঠিক আছে স্যার, এখানেই নামিয়ে দিলাম। আবার ডাকবেন!',{hold:3000}); }
+  ride=null;
+  const side=v.ang+Math.PI/2;
+  player.x=clamp(v.x+Math.cos(side)*52,30,W-30);
+  player.y=clamp(v.y+Math.sin(side)*52,30,H-30);
+  player.vx=0;player.vy=0;resolveCollisions(player);
+  stopEngine();
+  sfxBoard();
+}
+
+/* ═══════════════════ drawing ═══════════════════ */
+const cv=document.getElementById('game'),ctx=cv.getContext('2d');
+let vw=0,vh=0,dpr=1;
+function resize(){
+  dpr=Math.min(2,window.devicePixelRatio||1);
+  vw=window.innerWidth;vh=window.innerHeight;
+  cv.width=Math.round(vw*dpr);cv.height=Math.round(vh*dpr);
+  cv.style.width=vw+'px';cv.style.height=vh+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  // on a phone the whole map has to fit in the narrow screen too
+  ZMIN=Math.min(0.30, Math.min(vw/W,vh/H)*0.96);
+  zoomT=clamp(zoomT,ZMIN,ZMAX); if(zoom<ZMIN) zoom=ZMIN;
+}
+window.addEventListener('resize',resize);
+
+/* ── the character ── rounded, lit, four facings, walk cycle ── */
+function drawCharacter(x,y,dir,phase,squash,scale,st){
+  const s=scale||1;
+  st=st||{};
+  const swing=Math.sin(phase);
+  const bob=Math.abs(Math.sin(phase))*1.9*s;
+  const skin=st.skin||'#e3b184', skinD=st.skinD||'#c48f5f';
+  const shirt=st.shirt||'#2f6fb0', shirtD=st.shirtD||'#255a92';
+  const pants=st.pants||'#2f3f58', shoe=st.shoe||'#232a33';
+  const hair=st.hairCol||'#2a1f18';
+  const female=!!st.longHair, cap=!!st.cap, kurti=!!st.kurti;
+  const side = dir==='left'||dir==='right';
+  const back = dir==='up';
+  const flip = dir==='left'?-1:1;
+  ctx.save();
+  ctx.translate(x,y);
+  // contact shadow — grounds the figure
+  ctx.globalAlpha=.26; ctx.fillStyle='#152a12';
+  ctx.beginPath(); ctx.ellipse(2*s,10.5*s,10*s,4.4*s,0,0,TAU); ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.scale(flip,squash);
+
+  // ── legs (with shoes and a little depth) ──
+  const legSwing = side?swing*3.2*s:swing*2.4*s;
+  ctx.fillStyle=pants;
+  roundRect(ctx,-6.2*s,1.5*s+(back?0:legSwing),5.2*s,10.5*s,2.4*s);ctx.fill();
+  roundRect(ctx,1.0*s,1.5*s-(back?0:legSwing),5.2*s,10.5*s,2.4*s);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.16)';
+  roundRect(ctx,-6.2*s,7*s+(back?0:legSwing),5.2*s,3*s,1.4*s);ctx.fill();
+  roundRect(ctx,1.0*s,7*s-(back?0:legSwing),5.2*s,3*s,1.4*s);ctx.fill();
+  if(!back){
+    ctx.fillStyle=shoe;
+    roundRect(ctx,-6.6*s,10.4*s+legSwing,6*s,3.4*s,1.6*s);ctx.fill();
+    roundRect(ctx,0.6*s,10.4*s-legSwing,6*s,3.4*s,1.6*s);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.18)';
+    roundRect(ctx,-6.6*s,10.4*s+legSwing,6*s,1.2*s,0.6*s);ctx.fill();
+    roundRect(ctx,0.6*s,10.4*s-legSwing,6*s,1.2*s,0.6*s);ctx.fill();
+  }
+
+  // ── torso: gradient cylinder so it reads as round ──
+  const bodyH=kurti?17.5*s:14.5*s;
+  const tg=ctx.createLinearGradient(-8*s,-9*s,8*s,-9*s);
+  tg.addColorStop(0,shirtD); tg.addColorStop(.35,shirt); tg.addColorStop(1,shirtD);
+  ctx.fillStyle=tg;
+  roundRect(ctx,-8.2*s,-9*s-bob*.5,16.4*s,bodyH,5.4*s);ctx.fill();
+  // collar + hem
+  ctx.fillStyle='rgba(255,255,255,.30)';
+  roundRect(ctx,-3.4*s,-8.6*s-bob*.5,6.8*s,2.6*s,1.2*s);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,.16)';
+  roundRect(ctx,-8.2*s,(kurti?3.4*s:1.6*s)-bob*.5,16.4*s,4*s,2*s);ctx.fill();
+  if(kurti){
+    ctx.fillStyle='rgba(255,255,255,.42)';
+    roundRect(ctx,-1.2*s,-8*s-bob*.5,2.4*s,bodyH*.78,1.2*s);ctx.fill();
+  }
+
+  // ── arms + hands ──
+  const armY=-7*s-bob*.5;
+  ctx.fillStyle=skin;
+  if(side){
+    roundRect(ctx,2.6*s,armY+swing*3*s,4.4*s,9.4*s,2.2*s);ctx.fill();
+    ctx.beginPath();ctx.arc(4.8*s,armY+swing*3*s+9.6*s,2.5*s,0,TAU);ctx.fill();
+  }else{
+    roundRect(ctx,-11.4*s,armY+swing*2.6*s,4.4*s,9.4*s,2.2*s);ctx.fill();
+    roundRect(ctx,7.0*s,armY-swing*2.6*s,4.4*s,9.4*s,2.2*s);ctx.fill();
+    ctx.beginPath();ctx.arc(-9.2*s,armY+swing*2.6*s+9.6*s,2.5*s,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.arc(9.2*s,armY-swing*2.6*s+9.6*s,2.5*s,0,TAU);ctx.fill();
+  }
+  if(st.books && !back){
+    ctx.fillStyle='#2f7d4a'; roundRect(ctx,6.2*s,-4.4*s-bob*.5,6.4*s,4.4*s,1.2*s);ctx.fill();
+    ctx.fillStyle='#f2ead4'; roundRect(ctx,6.2*s,-5.1*s-bob*.5,6.4*s,1.3*s,0.6*s);ctx.fill();
+  }
+  if(st.phone && dir==='down'){
+    ctx.fillStyle='#20262f'; roundRect(ctx,5.0*s,-6.4*s-bob*.5,3.6*s,5.4*s,1.2*s);ctx.fill();
+    ctx.fillStyle='#8fd8f6'; roundRect(ctx,5.6*s,-5.8*s-bob*.5,2.4*s,3.8*s,0.7*s);ctx.fill();
+  }
+
+  // ── bag ──
+  const packCol=st.pack||'#9a6b3f';
+  if(st.pack!==false){
+    ctx.fillStyle=packCol;
+    if(back){ roundRect(ctx,-6.4*s,-6.4*s-bob*.5,12.8*s,11.6*s,4.2*s);ctx.fill();
+      ctx.fillStyle='rgba(0,0,0,.18)'; roundRect(ctx,-6.4*s,0.6*s-bob*.5,12.8*s,3.2*s,2*s);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.15)'; roundRect(ctx,-5*s,-5.4*s-bob*.5,4*s,7*s,2*s);ctx.fill(); }
+    else if(side){ roundRect(ctx,-9.4*s,-7.2*s-bob*.5,7.4*s,10.4*s,3.2*s);ctx.fill(); }
+    else { roundRect(ctx,3.4*s,-7.2*s-bob*.5,6.6*s,10.4*s,3.2*s);ctx.fill(); }
+  }
+
+  // ── head: sphere with a light side ──
+  const hy=-16.4*s-bob, hr=7.8*s;
+  const hg=ctx.createRadialGradient(-hr*.4,hy-hr*.45,hr*.2,0,hy,hr*1.15);
+  hg.addColorStop(0,'#f2c8a2'); hg.addColorStop(.65,skin); hg.addColorStop(1,skinD);
+  ctx.beginPath();ctx.arc(0,hy,hr,0,TAU);ctx.fillStyle=hg;ctx.fill();
+  // ears
+  if(!back){ ctx.fillStyle=skinD;
+    ctx.beginPath();ctx.arc(-hr*.95,hy+0.6*s,2.1*s,0,TAU);ctx.fill();
+    ctx.beginPath();ctx.arc(hr*.95,hy+0.6*s,2.1*s,0,TAU);ctx.fill(); }
+
+  // long hair volume behind
+  if(female){
+    ctx.fillStyle=hair;
+    ctx.beginPath();ctx.ellipse(0,hy+4.2*s,8.6*s,9.8*s,0,0,TAU);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.10)';
+    ctx.beginPath();ctx.ellipse(-3*s,hy+3.4*s,3*s,7*s,0.2,0,TAU);ctx.fill();
+    // face back on top
+    ctx.beginPath();ctx.arc(0,hy,hr*.96,0,TAU);ctx.fillStyle=hg;ctx.fill();
+  }
+
+  if(back){
+    // crown of the head from behind
+    ctx.fillStyle=hair;
+    ctx.beginPath();ctx.arc(0,hy+0.3*s,hr*1.02,0,TAU);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.12)';
+    ctx.beginPath();ctx.ellipse(-2.6*s,hy-2.6*s,3.2*s,2.2*s,-0.5,0,TAU);ctx.fill();
+    if(cap){ ctx.fillStyle=st.capCol||'#c4553a';
+      ctx.beginPath();ctx.arc(0,hy-0.6*s,hr*1.06,Math.PI,TAU);ctx.fill(); }
+  }else if(side){
+    // profile: nose bump, one eye, hair sweep
+    ctx.fillStyle=hair;
+    ctx.beginPath();ctx.arc(-1.2*s,hy-1.4*s,hr*1.02,Math.PI*0.98,Math.PI*2.02);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.14)';
+    ctx.beginPath();ctx.ellipse(-2.6*s,hy-4.4*s,3.4*s,1.8*s,-0.35,0,TAU);ctx.fill();
+    // nose
+    ctx.fillStyle=skinD;
+    ctx.beginPath();ctx.arc(hr*.86,hy+1.1*s,1.5*s,0,TAU);ctx.fill();
+    // eye
+    ctx.fillStyle='#fff'; ctx.beginPath();ctx.ellipse(hr*.34,hy+0.2*s,1.9*s,1.5*s,0,0,TAU);ctx.fill();
+    ctx.fillStyle='#20262f'; ctx.beginPath();ctx.arc(hr*.5,hy+0.2*s,1.0*s,0,TAU);ctx.fill();
+    ctx.strokeStyle='rgba(70,45,30,.6)'; ctx.lineWidth=0.9*s;
+    ctx.beginPath();ctx.arc(hr*.28,hy-1.8*s,2.2*s,Math.PI*1.15,Math.PI*1.85);ctx.stroke();
+    if(cap){ ctx.fillStyle=st.capCol||'#c4553a';
+      ctx.beginPath();ctx.arc(0,hy-1.2*s,hr*1.05,Math.PI,TAU);ctx.fill();
+      roundRect(ctx,hr*.2*s,hy-1.6*s,hr*1.1*s,2.6*s,1.2*s);ctx.fill(); }
+    if(!female) { ctx.fillStyle=hair;
+      ctx.beginPath();ctx.arc(0,hy-0.4*s,hr*1.02,Math.PI*1.05,Math.PI*1.95);ctx.fill(); }
+  }else{
+    // front view
+    ctx.fillStyle=hair;
+    ctx.beginPath();ctx.arc(0,hy-1.1*s,hr*1.03,Math.PI*1.02,Math.PI*1.98);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.13)';
+    ctx.beginPath();ctx.ellipse(-2.8*s,hy-5.2*s,3.4*s,1.7*s,-0.3,0,TAU);ctx.fill();
+    // eyes
+    for(const ex of [-2.9,2.9]){
+      ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.ellipse(ex*s,hy+0.4*s,1.9*s,1.6*s,0,0,TAU);ctx.fill();
+      ctx.fillStyle='#1e2126';
+      ctx.beginPath();ctx.arc(ex*s+0.2*s,hy+0.45*s,1.05*s,0,TAU);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.85)';
+      ctx.beginPath();ctx.arc(ex*s-0.2*s,hy+0.05*s,0.36*s,0,TAU);ctx.fill();
+      ctx.strokeStyle='rgba(70,45,30,.55)';ctx.lineWidth=0.85*s;
+      ctx.beginPath();ctx.arc(ex*s,hy-0.7*s,2.1*s,Math.PI*1.16,Math.PI*1.84);ctx.stroke();
+    }
+    // nose + mouth
+    ctx.strokeStyle='rgba(150,95,65,.55)';ctx.lineWidth=0.9*s;
+    ctx.beginPath();ctx.moveTo(0.1*s,hy+1.6*s);ctx.lineTo(0.6*s,hy+2.6*s);ctx.stroke();
+    ctx.strokeStyle='rgba(150,60,55,.75)';ctx.lineWidth=1.05*s;
+    ctx.beginPath();ctx.arc(0,hy+3.0*s,1.9*s,0.18*Math.PI,0.82*Math.PI);ctx.stroke();
+    if(female&&st.spectacles!==false){
+      ctx.fillStyle='#f6c453';
+      ctx.beginPath();ctx.arc(-hr*.95,hy+1.7*s,0.95*s,0,TAU);ctx.fill();
+      ctx.beginPath();ctx.arc(hr*.95,hy+1.7*s,0.95*s,0,TAU);ctx.fill();
+    }
+    // cap
+    if(cap){ ctx.fillStyle=st.capCol||'#c4553a';
+      ctx.beginPath();ctx.arc(0,hy-1.4*s,hr*1.06,Math.PI,TAU);ctx.fill();
+      roundRect(ctx,-hr*1.02,hy-1.8*s,hr*2.04,2.8*s,1.3*s);ctx.fill();
+      ctx.fillStyle='rgba(0,0,0,.18)'; roundRect(ctx,-hr,hy+0.4*s,hr*2,1.2*s,0.6*s);ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+/* ── student looks ── */
+const STUDENT_LOOKS=[
+  {shirt:'#2f6fb0',shirtD:'#255a92',pants:'#2f3f58',pack:'#9a6b3f',books:true},
+  {shirt:'#8e4a7a',shirtD:'#753c64',pants:'#2b3550',pack:'#3f6ea8',longHair:true,kurti:true},
+  {shirt:'#2f8a6a',shirtD:'#267257',pants:'#3a3a44',pack:false,phone:true},
+  {shirt:'#c08a2e',shirtD:'#a3741f',pants:'#2f3f58',pack:'#4a8c50',books:true},
+  {shirt:'#b8543a',shirtD:'#9c4530',pants:'#33384a',pack:'#8a4a7a',cap:true,capCol:'#2f6b3a'},
+  {shirt:'#6a4fa0',shirtD:'#57418a',pants:'#2b3550',pack:'#c08a2e',longHair:true,kurti:true},
+  {shirt:'#3f6ea8',shirtD:'#33598a',pants:'#2f3f58',pack:'#b8543a'},
+  {shirt:'#d9a05b',shirtD:'#bd8746',pants:'#33384a',pack:'#2f8a6a',books:true},
+  {shirt:'#4a8c50',shirtD:'#3b7340',pants:'#2b3550',pack:'#6a4fa0',longHair:true},
+  {shirt:'#8a4a7a',shirtD:'#723c63',pants:'#2f3f58',pack:'#3f6ea8',phone:true},
+  {shirt:'#2f6fb0',shirtD:'#255a92',pants:'#3a3a44',pack:'#2f8a6a',cap:true,capCol:'#1f4f7a'},
+  {shirt:'#c4553a',shirtD:'#a5452e',pants:'#2b3550',pack:'#d9a05b',longHair:true,kurti:true,books:true},
+];
+const CHATTER=['ক্লাস কখন শুরু?','চল আমতলায় যাই','স্যার আসছেন না আজ','অ্যাসাইনমেন্ট দিয়েছে?','চায়ের দোকানে চল','রেজাল্ট কবে দেবে?','প্যারিস রোডে ছবি তুলি চল','বইটা দিলি?'];
+
+
+/* ── the RU double-decker bus (white top, blue window bands, RU livery) ── */
+function drawRUBus(v){
+  const L=168,Wd=58;
+  ctx.save();
+  ctx.translate(v.x,v.y);ctx.rotate(v.ang);
+  // shadow
+  ctx.globalAlpha=.26;ctx.fillStyle='#152a12';
+  roundRect(ctx,-L/2+6,-Wd/2+10,L,Wd,16);ctx.fill();ctx.globalAlpha=1;
+  // wheels
+  ctx.fillStyle='#1b1d22';
+  roundRect(ctx,-L/2+22,-Wd/2-5,26,10,4);ctx.fill();
+  roundRect(ctx,-L/2+22,Wd/2-5,26,10,4);ctx.fill();
+  roundRect(ctx,L/2-58,-Wd/2-5,26,10,4);ctx.fill();
+  roundRect(ctx,L/2-58,Wd/2-5,26,10,4);ctx.fill();
+  // body
+  ctx.fillStyle='#f6f8f8';
+  roundRect(ctx,-L/2,-Wd/2,L,Wd,13);ctx.fill();
+  ctx.strokeStyle='rgba(20,40,60,.35)';ctx.lineWidth=2;ctx.stroke();
+  // upper-deck window band (blue) — both sides
+  const band=(yy,hh)=>{
+    ctx.fillStyle='#1f7fbf';
+    roundRect(ctx,-L/2+13,yy,L-26,hh,4);ctx.fill();
+    ctx.fillStyle='#bfe6fb';
+    const n=7,wW=(L-30)/n;
+    for(let i=0;i<n;i++){ roundRect(ctx,-L/2+15+i*wW,yy+2.5,wW-3,hh-5,2);ctx.fill(); }
+  };
+  band(-Wd/2+5,9.5);
+  band(Wd/2-14.5,9.5);
+  // white diagonal livery stripe near the rear + blue lower stripe
+  ctx.save();
+  ctx.beginPath();roundRect(ctx,-L/2,-Wd/2,L,Wd,13);ctx.clip();
+  ctx.fillStyle='#1f7fbf';
+  ctx.beginPath();ctx.moveTo(-L/2+26,-Wd/2);ctx.lineTo(-L/2+54,-Wd/2);ctx.lineTo(-L/2+30,Wd/2);ctx.lineTo(-L/2+2,Wd/2);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.92)';
+  ctx.beginPath();ctx.moveTo(-L/2+40,-Wd/2);ctx.lineTo(-L/2+50,-Wd/2);ctx.lineTo(-L/2+26,Wd/2);ctx.lineTo(-L/2+16,Wd/2);ctx.closePath();ctx.fill();
+  ctx.restore();
+  // roof panel + RU text (kept upright when the bus heads west)
+  const flip = Math.cos(v.ang) < 0;
+  ctx.save();
+  ctx.translate(0,0);
+  if(flip) ctx.rotate(Math.PI);
+  ctx.fillStyle='#eef3f4';roundRect(ctx,-L/2+58,-Wd/2+11,L-118,Wd-22,7);ctx.fill();
+  ctx.strokeStyle='rgba(31,127,191,.45)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#17537d';
+  ctx.font=FONT(11,800);ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('রাজশাহী বিশ্ববিদ্যালয়',(flip?1:1)*0,-1.5);
+  ctx.font=FONT(7,700);ctx.fillStyle='#5b7d92';
+  ctx.fillText('RU  TRANSPORT',0,9.5);
+  // windscreen + destination board (front is +X in bus space)
+  const fx=(L/2-13)*(flip?-1:1);
+  ctx.fillStyle='#a9d8f2';roundRect(ctx,fx,-Wd/2+8,9,Wd-16,3);ctx.fill();
+  ctx.fillStyle='#12354a';roundRect(ctx,fx,-9,10,18,2);ctx.fill();
+  ctx.fillStyle='#f4c26b';ctx.font=FONT(6.5,800);
+  ctx.save();ctx.translate(fx+5,0);ctx.rotate(Math.PI/2);ctx.fillText('রাবি',0,0);ctx.restore();
+  ctx.restore();
+  // door gap on the near side
+  ctx.fillStyle='rgba(20,40,60,.30)';roundRect(ctx,-2,-Wd/2+3,16,4,2);ctx.fill();
+  ctx.restore();
+}
+
+function drawRickshaw(v){
+  /* top-down traditional painted rickshaw:
+     teal chassis + fenders, yellow hood with red rosettes, red patterned seat,
+     spoked wheels, black handlebar with lamp — modelled on the classic Dhaka/RU rickshaw */
+  const ang=v.ang;
+  ctx.save();
+  ctx.translate(v.x,v.y); ctx.rotate(ang);
+  // ground shadow
+  ctx.globalAlpha=.26; ctx.fillStyle='#152a12';
+  roundRect(ctx,-27,-17,54,34,9); ctx.fill(); ctx.globalAlpha=1;
+
+  // ── wheels (rear pair behind the seat, front wheel under the handlebar)
+  const wheel=(x,y,r)=>{
+    ctx.fillStyle='#20242a'; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.fill();
+    ctx.strokeStyle='#8f9aa3'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(x,y,r,0,TAU); ctx.stroke();
+    ctx.strokeStyle='#cfd6da'; ctx.lineWidth=.9;
+    for(let k=0;k<8;k++){ const a2=k/8*TAU;
+      ctx.beginPath(); ctx.moveTo(x+Math.cos(a2)*(r-1),y+Math.sin(a2)*(r-1));
+      ctx.lineTo(x-Math.cos(a2)*(r-1),y-Math.sin(a2)*(r-1)); ctx.stroke(); }
+    ctx.fillStyle='#40505c'; ctx.beginPath(); ctx.arc(x,y,r*0.28,0,TAU); ctx.fill();
+  };
+  wheel(-15,-15,6.2); wheel(-15,15,6.2); wheel(20,0,6.4);
+
+  // ── rear axle bar
+  ctx.strokeStyle='#3a444c'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(-15,-15); ctx.lineTo(-15,15); ctx.stroke();
+
+  // ── chassis (teal)
+  ctx.fillStyle='#1f8b8b'; roundRect(ctx,-26,-13,46,26,7); ctx.fill();
+  ctx.strokeStyle='#14676a'; ctx.lineWidth=1.4; ctx.stroke();
+
+  // ── passenger hood / canopy: yellow with red rosettes
+  ctx.fillStyle='#f5c33b'; roundRect(ctx,-22,-11.5,26,23,6); ctx.fill();
+  ctx.strokeStyle='#b8860b'; ctx.lineWidth=1.2; ctx.stroke();
+  // floral rosettes on the hood
+  const rosette=(x,y,r)=>{
+    ctx.fillStyle='#c9402e';
+    for(let k=0;k<6;k++){ const a2=k/6*TAU;
+      ctx.beginPath(); ctx.arc(x+Math.cos(a2)*r*0.62,y+Math.sin(a2)*r*0.62,r*0.42,0,TAU); ctx.fill(); }
+    ctx.fillStyle='#f7e7a8'; ctx.beginPath(); ctx.arc(x,y,r*0.4,0,TAU); ctx.fill();
+    ctx.fillStyle='#2f7d4a'; ctx.beginPath(); ctx.arc(x,y,r*0.18,0,TAU); ctx.fill();
+  };
+  rosette(-15,-5.5,3.4); rosette(-15,5.5,3.4); rosette(-9,0,2.6);
+  // green leaf accents
+  ctx.fillStyle='#2f7d4a';
+  for(const y of [-9.6,9.6]){ ctx.beginPath(); ctx.ellipse(-4.5,y,3.2,1.5,0.5,0,TAU); ctx.fill(); }
+
+  // ── seat (red with white pattern)
+  ctx.fillStyle='#c0392b'; roundRect(ctx,-3,-8,12,16,4); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=.8;
+  for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.moveTo(-1,k*3); ctx.lineTo(8,k*3); ctx.stroke(); }
+
+  // ── driver's saddle + handlebar
+  ctx.fillStyle='#2b2b2b'; roundRect(ctx,9,-5,7,10,3); ctx.fill();
+  ctx.strokeStyle='#2b2b2b'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(14,0); ctx.lineTo(22,-6);
+  ctx.moveTo(14,0); ctx.lineTo(22,6); ctx.stroke();
+  // head-lamp
+  ctx.fillStyle='#f6e7a8'; ctx.beginPath(); ctx.arc(24,0,2.6,0,TAU); ctx.fill();
+  ctx.strokeStyle='#8a7a3a'; ctx.lineWidth=.8; ctx.stroke();
+
+  // ── rider (rickshaw-wala)
+  ctx.fillStyle='#f0f2ee';
+  roundRect(ctx,8,-4.6,9,9.2,3); ctx.fill();          // punjabi
+  ctx.fillStyle='#d7a06a'; ctx.beginPath(); ctx.arc(12.5,0,3.6,0,TAU); ctx.fill();   // head
+  ctx.fillStyle='#221a14'; ctx.beginPath(); ctx.arc(12.5,0,3.5,Math.PI*1.1,Math.PI*1.9); ctx.fill();
+
+  // ── painted side panels (teal with yellow dots), like the reference
+  ctx.fillStyle='#1f8b8b';
+  roundRect(ctx,-26,-12.5,5,25,2); ctx.fill();
+  ctx.fillStyle='#f5c33b';
+  for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.arc(-23.5,k*5,1.4,0,TAU); ctx.fill(); }
+  ctx.restore();
+}
+
+/* ═════════════ ইবলিশ চত্বর — পুকুরপাড়ের প্রেম-আড্ডা ═════════════ */
+const LOVE={x:400,y:1035};
+function drawLoveChattar(cx,cy){
+  // paved platform
+  bx.fillStyle='rgba(0,0,0,.10)'; bx.beginPath(); bx.arc(cx+9,cy+11,104,0,TAU); bx.fill();
+  bx.fillStyle='#d3c9a9'; bx.beginPath(); bx.arc(cx,cy,104,0,TAU); bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)'; bx.lineWidth=4; bx.stroke();
+  bx.save(); bx.strokeStyle='rgba(130,115,80,.24)'; bx.lineWidth=2;
+  for(let a=0;a<TAU;a+=Math.PI/14){
+    bx.beginPath(); bx.moveTo(cx+Math.cos(a)*76,cy+Math.sin(a)*76);
+    bx.lineTo(cx+Math.cos(a)*101,cy+Math.sin(a)*101); bx.stroke();
+  }
+  bx.restore();
+  // lawn ring
+  bx.fillStyle='#5d9a44'; bx.beginPath(); bx.arc(cx,cy,76,0,TAU); bx.fill();
+  bx.strokeStyle='rgba(70,110,55,.35)'; bx.lineWidth=2; bx.stroke();
+
+  // the pond
+  bx.beginPath();
+  for(let a=0;a<=TAU+0.02;a+=0.12){
+    const rr=1+0.05*Math.sin(a*3.1)+0.035*Math.cos(a*5.4);
+    const px=cx+Math.cos(a)*60*rr, py=cy+Math.sin(a)*38*rr;
+    if(a===0) bx.moveTo(px,py); else bx.lineTo(px,py);
+  }
+  bx.closePath();
+  const g=bx.createRadialGradient(cx-18,cy-14,8,cx,cy,70);
+  g.addColorStop(0,'#57b3cc'); g.addColorStop(.55,'#2d87a0'); g.addColorStop(1,'#1e6478');
+  bx.fillStyle=g; bx.fill();
+  bx.strokeStyle='#a8bd94'; bx.lineWidth=3.5; bx.stroke();
+  // ripples
+  bx.strokeStyle='rgba(255,255,255,.35)'; bx.lineWidth=1.4;
+  for(let i=0;i<5;i++){
+    const yy=cy-24+i*12;
+    bx.beginPath(); bx.moveTo(cx-30+(i%2)*9,yy); bx.lineTo(cx+26-(i%3)*11,yy); bx.stroke();
+  }
+  // lily pads
+  for(const [lx,ly,r] of [[-31,11,7],[17,-15,6],[-5,21,5.4],[33,13,6.4]]){
+    bx.fillStyle='#4f8f4a'; bx.beginPath(); bx.arc(cx+lx,cy+ly,r,0.5,TAU-0.5); bx.fill();
+    bx.fillStyle='#3f7a3d'; bx.beginPath(); bx.arc(cx+lx,cy+ly,r*.55,0,TAU); bx.fill();
+  }
+  // lotus
+  bx.fillStyle='#f2a3bd';
+  for(let i=0;i<6;i++){ const a2=i/6*TAU; bx.beginPath(); bx.ellipse(cx+24+Math.cos(a2)*2.8,cy-4+Math.sin(a2)*2.8,3.4,2.2,a2,0,TAU); bx.fill(); }
+  bx.fillStyle='#f7d24a'; bx.beginPath(); bx.arc(cx+24,cy-4,2,0,TAU); bx.fill();
+  // two ducks
+  for(const [dx0,dy0] of [[-14,-3],[7,17]]){
+    bx.fillStyle='rgba(255,255,255,.65)'; bx.beginPath(); bx.ellipse(cx+dx0,cy+dy0+3,7.4,2.4,0,0,TAU); bx.fill();
+    bx.fillStyle='#fdfbf2'; bx.beginPath(); bx.ellipse(cx+dx0,cy+dy0,6,4.6,0,0,TAU); bx.fill();
+    bx.beginPath(); bx.arc(cx+dx0+4.6,cy+dy0-3.4,2.6,0,TAU); bx.fill();
+    bx.fillStyle='#e8a13a'; bx.beginPath(); bx.moveTo(cx+dx0+6.6,cy+dy0-3.6); bx.lineTo(cx+dx0+9.4,cy+dy0-2.8); bx.lineTo(cx+dx0+6.6,cy+dy0-2); bx.closePath(); bx.fill();
+    bx.fillStyle='#221a14'; bx.beginPath(); bx.arc(cx+dx0+5.3,cy+dy0-4,0.7,0,TAU); bx.fill();
+  }
+
+  // ── iron grille all around the pond (gap at the south for the ghat) ──
+  const RX=68,RY=45;
+  bx.strokeStyle='#55654f'; bx.lineWidth=1.7;
+  for(let a=0;a<TAU;a+=0.085){
+    if(Math.abs(((a-Math.PI/2+Math.PI*3)%TAU)-Math.PI)<0.17) continue;   // ghat opening
+    const x1=cx+Math.cos(a)*(RX-3), y1=cy+Math.sin(a)*(RY-3);
+    const x2=cx+Math.cos(a)*RX,     y2=cy+Math.sin(a)*RY;
+    bx.beginPath(); bx.moveTo(x1,y1); bx.lineTo(x2,y2); bx.stroke();
+  }
+  bx.strokeStyle='#41503d'; bx.lineWidth=2.6;
+  bx.beginPath(); bx.ellipse(cx,cy,RX,RY,0,0,TAU); bx.stroke();
+  bx.lineWidth=1.8;
+  bx.beginPath(); bx.ellipse(cx,cy,RX-3.2,RY-3.2,0,0,TAU); bx.stroke();
+  // posts + finials
+  bx.fillStyle='#3c4a38';
+  for(let a=0;a<TAU;a+=0.52){
+    if(Math.abs(((a-Math.PI/2+Math.PI*3)%TAU)-Math.PI)<0.2) continue;
+    bx.beginPath(); bx.arc(cx+Math.cos(a)*(RX-1.6),cy+Math.sin(a)*(RY-1.6),2.1,0,TAU); bx.fill();
+  }
+  // ghat steps down to the water
+  for(let i=0;i<3;i++){
+    bx.fillStyle=i%2?'#c9bea1':'#bdb193';
+    roundRect(bx,cx-12+i*1.6,cy+RY-6+i*5.4,24-i*3.2,5,1.5); bx.fill();
+  }
+
+  // two stone benches
+  for(const [x0,y0,rot] of [[cx-88,cy+14,-0.35],[cx+84,cy+22,0.4]]){
+    bx.save(); bx.translate(x0,y0); bx.rotate(rot);
+    bx.fillStyle='rgba(0,0,0,.16)'; roundRect(bx,-20,-3,40,10,3); bx.fill();
+    bx.fillStyle='#8d7f63'; roundRect(bx,-19,-5,38,10,3); bx.fill();
+    bx.fillStyle='#a89a74'; roundRect(bx,-19,-8.5,38,4,2); bx.fill();
+    bx.fillStyle='#6d6250'; roundRect(bx,-15,4,5,4,1); bx.fill(); roundRect(bx,10,4,5,4,1); bx.fill();
+    bx.restore();
+  }
+  // lamp posts
+  for(const [x0,y0] of [[cx-70,cy-66],[cx+72,cy-62]]){
+    bx.fillStyle='#4a5245'; bx.fillRect(x0-1.4,y0-20,2.8,22);
+    bx.fillStyle='#3d463a'; roundRect(bx,x0-5,y0-28,10,9,3); bx.fill();
+    bx.fillStyle='#ffe6a0'; bx.globalAlpha=.9; bx.beginPath(); bx.arc(x0,y0-23.5,3,0,TAU); bx.fill(); bx.globalAlpha=1;
+  }
+  // flower dots round the edge
+  for(let a=0.2;a<TAU;a+=0.46){
+    const fx=cx+Math.cos(a)*99, fy=cy+Math.sin(a)*99;
+    bx.fillStyle=a%1>.5?'#e46b8e':'#f3c24a'; bx.beginPath(); bx.arc(fx,fy,2.2,0,TAU); bx.fill();
+  }
+}
+
+/* ── the little love stories playing out there ── */
+const LOVE_LINES=['ভালোবাসি…','আজ চাঁদটা কেমন যেন…','হাতটা ধরো না…','গানটা শুনছ?','এই পুকুরটাই আমাদের সাক্ষী','আরেকটু সময় থাকো…','তুমি হাসলে সব ঠিক লাগে'];
+function heartPath(x,y,s){
+  ctx.beginPath();
+  ctx.moveTo(x,y+s*.92);
+  ctx.bezierCurveTo(x-s*1.3,y+s*.05,x-s*.56,y-s*.98,x,y-s*.28);
+  ctx.bezierCurveTo(x+s*.56,y-s*.98,x+s*1.3,y+s*.05,x,y+s*.92);
+}
+function drawRomance(){
+  const t=T, cx=LOVE.x, cy=LOVE.y;
+  const sway=Math.sin(t*.9)*.9, sway2=Math.cos(t*.8)*.8;
+  const LA=STUDENT_LOOKS[0], LB=STUDENT_LOOKS[1], LC=STUDENT_LOOKS[5],
+        LD=STUDENT_LOOKS[8], LE=STUDENT_LOOKS[3], LF=STUDENT_LOOKS[2], LG=STUDENT_LOOKS[6];
+
+  // couple 1 — walking hand in hand, talking slowly
+  drawCharacter(cx-86+sway, cy-30, 'right', t*1.5, 1, .94, LA);
+  drawCharacter(cx-70+sway, cy-30, 'left',  t*1.5+1.1, 1, .94, LB);
+  ctx.strokeStyle='#d7a06a'; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.moveTo(cx-81+sway,cy-19); ctx.lineTo(cx-75+sway,cy-19); ctx.stroke();
+
+  // couple 2 — standing face to face
+  drawCharacter(cx+76+sway2, cy-36, 'down', t*1.2, 1, .94, LC);
+  drawCharacter(cx+76+sway2, cy-14, 'up',   t*1.2+1.6, 1, .94, LD);
+
+  // the proposal — one knee down, ring out
+  const kneel=Math.sin(t*1.4)*.6;
+  drawCharacter(cx+2, cy-95, 'down', t*.8, 1, .92, LE);
+  ctx.save();
+  ctx.translate(cx+2, cy-76+kneel); ctx.scale(1,.86);
+  drawCharacter(0,0,'up', 0, 1, .9, LF);
+  ctx.restore();
+  // ring + sparkle in his hand
+  const rx=cx+2+Math.sin(t*2)*1.2, ry=cy-80+kneel-Math.sin(t*3)*2;
+  ctx.strokeStyle='#f3c24a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(rx,ry,3.4,0,TAU); ctx.stroke();
+  ctx.fillStyle='#fff6cf'; ctx.beginPath(); ctx.arc(rx-1.2,ry-3.4,1.5,0,TAU); ctx.fill();
+
+  // the singer with a guitar
+  drawCharacter(cx-64, cy+56, 'right', t*1.1, 1, .94, LG);
+  ctx.save(); ctx.translate(cx-58,cy+62); ctx.rotate(-.35);
+  ctx.fillStyle='#a3702f'; ctx.beginPath(); ctx.ellipse(0,0,8.4,6.4,0,0,TAU); ctx.fill();
+  ctx.fillStyle='#c08a3e'; ctx.beginPath(); ctx.ellipse(0,0,5.2,4.2,0,0,TAU); ctx.fill();
+  ctx.fillStyle='#6e4a1e'; ctx.fillRect(5,-1.6,13,3.2);
+  ctx.fillStyle='#efe3c4'; ctx.beginPath(); ctx.arc(0,0,1.8,0,TAU); ctx.fill();
+  ctx.restore();
+
+  // couple on the east bench side, giggling
+  drawCharacter(cx+64, cy+56, 'right', t*1.3+2, 1, .92, LB);
+  drawCharacter(cx+64, cy+72, 'up',    t*1.3+.4, 1, .92, LA);
+
+  // hearts drifting up
+  const spots=[[cx-78,cy-46],[cx+76,cy-50],[cx+2,cy-110],[cx+64,cy+44]];
+  for(let si=0;si<spots.length;si++){
+    for(let i=0;i<3;i++){
+      const p=((t*.40+i/3+si*.19)%1);
+      const hx=spots[si][0]+Math.sin(p*6+si)*8;
+      const hy=spots[si][1]-p*42;
+      ctx.save(); ctx.globalAlpha=Math.max(0,(1-p)*.95);
+      ctx.fillStyle=si%2?'#e2537b':'#ef7fa2';
+      heartPath(hx,hy,3.6*(1-p*.3)); ctx.fill();
+      ctx.restore();
+    }
+  }
+  // music notes from the guitar
+  for(let i=0;i<3;i++){
+    const p=((t*.33+i/3)%1);
+    ctx.save(); ctx.globalAlpha=Math.max(0,(1-p)*.95);
+    ctx.fillStyle='#6a4fa0'; ctx.font='700 13px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(i%2?'♪':'♫', cx-52+Math.sin(p*5)*9, cy+40-p*44);
+    ctx.restore();
+  }
+  // one slow conversation bubble at a time
+  const idx=Math.floor(t/6.2)%LOVE_LINES.length;
+  const anchors=[[cx-78,cy-62],[cx+76,cy-66],[cx+2,cy-124],[cx-64,cy+30]];
+  const an=anchors[idx%anchors.length];
+  const txt=LOVE_LINES[idx];
+  ctx.save();
+  ctx.font=FONT(10.5,600); ctx.textAlign='center'; ctx.textBaseline='middle';
+  const w=ctx.measureText(txt).width+16, h=19;
+  const x0=an[0]-w/2, y0=an[1]-(Math.sin(t*1.6)*1.2);
+  ctx.globalAlpha=.96;
+  ctx.fillStyle='rgba(255,255,255,.95)'; roundRect(ctx,x0,y0,w,h,8); ctx.fill();
+  ctx.strokeStyle='rgba(200,120,150,.45)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x0+w/2-4,y0+h); ctx.lineTo(x0+w/2+2,y0+h+5); ctx.lineTo(x0+w/2+5,y0+h);
+  ctx.fillStyle='rgba(255,255,255,.95)'; ctx.fill();
+  ctx.fillStyle='#7a3b53'; ctx.fillText(txt,x0+w/2,y0+h/2+.5);
+  ctx.restore();
+}
+
+function drawNPCs(){
+  for(const n of npcs){
+    drawCharacter(n.x,n.y,n.dir||'down',n.phase||n.t*0.6,1,0.9,n.look);
+  }
+  // little chat bubbles
+  for(const n of npcs){
+    if(n.bubble<=0||!n.chat) continue;
+    const a=Math.min(1,n.bubble/0.6);
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.font=FONT(10.5,600);
+    const w=ctx.measureText(n.chat).width+14, h=19;
+    const bx0=n.x-w/2, by0=n.y-46-Math.min(6,(3.2-n.bubble)*4);
+    ctx.fillStyle='rgba(255,255,255,.95)';
+    roundRect(ctx,bx0,by0,w,h,8); ctx.fill();
+    ctx.strokeStyle='rgba(80,100,70,.25)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(n.x-4,by0+h); ctx.lineTo(n.x+2,by0+h+5); ctx.lineTo(n.x+4,by0+h);
+    ctx.fillStyle='rgba(255,255,255,.95)'; ctx.fill();
+    ctx.fillStyle='#39402f'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.chat,n.x,by0+h/2+0.5);
+    ctx.restore();
+  }
+}
+
+function drawParticles(){
+  for(const p of particles){
+    const k=1-p.life/p.max;
+    ctx.save();ctx.globalAlpha=Math.max(0,k);
+    if(p.type==='confetti'){
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.col;
+      ctx.fillRect(-p.size/2,-p.size/3,p.size,p.size*.66);
+    }else{
+      ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.size*(0.6+k*0.8),0,TAU);ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawBeacon(l){
+  const got=found.has(l.id);
+  const pulse=.5+.5*Math.sin(T*2.2+(l.x+l.y)*.01);
+  if(!got){
+    ctx.save();
+    ctx.globalAlpha=.2+pulse*.15;ctx.strokeStyle='#8ee04a';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(l.x,l.y,22+pulse*9,0,TAU);ctx.stroke();
+    ctx.globalAlpha=.09+pulse*.07;ctx.fillStyle='#8ee04a';
+    ctx.beginPath();ctx.arc(l.x,l.y,30+pulse*12,0,TAU);ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.font='700 22px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.globalAlpha=.92;
+    ctx.fillText(l.icon,l.x,l.y-58-Math.sin(T*3+l.x)*4);
+    ctx.restore();
+  }else{
+    ctx.save();ctx.globalAlpha=.4;ctx.strokeStyle='rgba(253,246,230,.75)';ctx.lineWidth=2;
+    ctx.setLineDash([5,7]);ctx.beginPath();ctx.arc(l.x,l.y,24,0,TAU);ctx.stroke();ctx.restore();
+    ctx.save();ctx.globalAlpha=.5;ctx.font='700 16px system-ui,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#2f6b3a';
+    ctx.fillText('✓',l.x,l.y-52);ctx.restore();
+  }
+}
+
+
+
+/* ═══════════════════ রিকশা ট্যুর — গাইডসহ পুরো ক্যাম্পাস ═══════════════════ */
+/* a long loop that touches every corner of the 753-acre campus */
+const TOUR_ROUTE=[
+  {x:860,y:1330},{x:860,y:1238},{x:600,y:1238},{x:300,y:1238},{x:188,y:1238},
+  {x:188,y:1000},{x:188,y:760},{x:188,y:542},
+  {x:600,y:542},{x:1000,y:542},{x:1400,y:542},{x:1800,y:542},{x:2200,y:542},
+  {x:2450,y:542},{x:2450,y:900},{x:2450,y:1238},{x:2100,y:1238},{x:1750,y:1238},
+  {x:1400,y:1238},{x:1100,y:1238},{x:860,y:1238},{x:860,y:1330}
+];
+/* what the puller says when the rickshaw reaches each spot */
+const TOUR_SPOTS=[
+  {x:860,y:1330,r:95,key:'gate',
+   line:'এই যে স্যার, এইটা আমাদের প্রধান ফটক — নাটোর রোডের ধারে, একটু পশ্চিমে। এখান দিয়েই ক্যাম্পাসে ঢুকতে হয়, সামনেই রাউন্ডঅবাউট।'},
+  {x:860,y:1238,r:115,key:'admin',
+   line:'রাউন্ডঅবাউট। বাঁ দিকে উত্তর-পশ্চিমে প্রশাসন ভবন-১, উপাচার্যের দপ্তর; তার পেছনেই কেন্দ্রীয় গ্রন্থাগার।'},
+  {x:520,y:1238,r:120,key:'paris',
+   line:'এই সরু রাস্তাটাই প্যারিস রোড — দুই পাশে সারি সারি উঁচু গাছ, কাণ্ডে সাদা-লাল রঙ। ছবি তোলার সেরা জায়গা।'},
+  {x:232,y:1238,r:110,key:'kalja',
+   line:'এই গেটটা কাজলা গেট। শহরের পশ্চিম দিক থেকে আসা ভাইয়েরা এখান দিয়েই ঢোকে, সামনেই কাজলা বাজার।'},
+  {x:300,y:1040,r:200,key:'love',
+   line:'ডান দিকে ইবলিশ চত্বর — পুকুরের চারপাশে লোহার গ্রিল, ছায়ায় বেঞ্চ। জোড়া হাতে হাঁটা, গান, প্রপোজাল — বিকেল হলেই এই পুকুরপাড় জমে ওঠে।'},
+  {x:188,y:780,r:200,key:'halls',
+   line:'পশ্চিম পাশে মেয়েদের হলের সারি — বঙ্গমাতা, রোকেয়া, নূরজাহান, মন্নুজান, চন্দ্রিমা আর রহমতুন্নেসা।'},
+  {x:188,y:542,r:120,key:'westcorner',
+   line:'পশ্চিম কোণের মোড়। এখান থেকে সোজা উত্তরে হলের রাস্তা, আর পুব দিকে হাটল রোড ধরে স্টেডিয়াম।'},
+  {x:900,y:542,r:190,key:'northhalls',
+   line:'সামনে উত্তরে হবিবুর রহমান হল, জিয়াউর রহমান হল আর মাদার বখশ হল — তিনটাই রেললাইনের ধারে, ট্রেন গেলে জানালা কেঁপে ওঠে।'},
+  {x:1288,y:542,r:150,key:'stadium',
+   line:'এই যে বড় স্টেডিয়াম — ভেতরে ক্রিকেট আর ফুটবল চলছে। উত্তর-পূর্বে জিমনেশিয়াম, তার পাশে স্টেডিয়াম পুকুর, আর একটু দূরে সুইমিং পুল।'},
+  {x:1470,y:542,r:150,key:'station',
+   line:'এই রাস্তাটা সোজা চলে গেছে রাজশাহী বিশ্ববিদ্যালয় রেলস্টেশনে — স্টেশনের পাশে মাদার বখশ হল।'},
+  {x:1900,y:542,r:180,key:'easthalls',
+   line:'পূর্ব পাশে শামসুজ্জোহা, নওয়াব আব্দুল লতিফ, শাহ মখদুম আর আমীর আলী হল। এই এলাকার পাশেই বধ্যভূমি স্মৃতিস্তম্ভ।'},
+  {x:2450,y:900,r:170,key:'medical',
+   line:'পূর্ব সীমানার এই রাস্তা ধরে নামলে বিনোদপুর গেট আর মেডিকেল সেন্টার — অ্যাম্বুলেন্স সবসময় প্রস্তুত।'},
+  {x:1600,y:1238,r:200,key:'minar',
+   line:'সামনে উত্তর দিকে শহীদ মিনার আর পাশে শহীদ স্মৃতি সংগ্রহশালা, তার একটু পশ্চিমে কেন্দ্রীয় জামে মসজিদ। একুশে ফেব্রুয়ারিতে এখানে সারা ক্যাম্পাস জড়ো হয়।'},
+  {x:860,y:1238,r:120,key:'round',
+   line:'আবার রাউন্ডঅবাউটে ফিরে এলাম। ট্যুর শেষ স্যার — ক্যাম্পাসটা এবার চেনা লাগবে, তাই না?'}
+
+];
+const tour={active:false,route:TOUR_ROUTE,i:1,said:new Set(),done:false,progress:0};
+
+function startTour(){
+  const r=ricks[0];
+  ride=r; tour.active=true; tour.i=1; tour.said.clear(); tour.done=false;
+  r.x=860; r.y=1330; r.ang=-Math.PI/2; r.tourMode=true;
+  player.vx=0; player.vy=0;
+  sfxBoard();
+  speak('আসসালামু আলাইকুম স্যার! বসেন, আমি পুরো ক্যাম্পাসটা ঘুরিয়ে দেখাই — সাতশো তিপ্পান্ন একর জায়গা।',{hold:5200});
+  el.hint.classList.remove('on');
+  tourBadge(true);
+}
+function endTour(){
+  tour.active=false;
+  if(ride) ride.tourMode=false;
+  tourBadge(false);
+}
+function tourBadge(on){
+  const b=document.getElementById('tourBadge');
+  if(b) b.classList.toggle('on',!!on);
+}
+function updateTour(dt){
+  if(!tour.active||!ride) return;
+  const r=ride, target=TOUR_ROUTE[tour.i];
+  const dx=target.x-r.x, dy=target.y-r.y, d=Math.hypot(dx,dy);
+  // banner
+  const near=TOUR_SPOTS.find(sp=>!tour.said.has(sp.key)&&Math.hypot(sp.x-r.x,sp.y-r.y)<sp.r
+    && !(sp.key==='round'&&tour.said.size<TOUR_SPOTS.length-2));
+  if(near){ tour.said.add(near.key); speak(near.line,{hold:Math.max(4200,near.line.length*115)}); }
+  const total=TOUR_SPOTS.length;
+  const done=tour.said.size;
+  const badge=document.getElementById('tourText');
+  if(badge) badge.textContent=`গাইডেড ট্যুর ${bn(Math.min(done,total))}/${bn(total)} · ৭৫৩ একর · নামতে E`;
+  if(tour.said.size>=TOUR_SPOTS.length && !tour.done){
+    tour.done=true;
+    setTimeout(()=>{ if(tour.active){ speak('ব্যাস স্যার, পুরো ক্যাম্পাস ঘুরে শেষ। নেমে একটু হেঁটে ঘুরে দেখেন!',{hold:4200}); dismount(); } },1200);
+  }
+  if(d<26){ tour.i=(tour.i+1)%TOUR_ROUTE.length; }
+}
+
+/* ═══════════════════ live sports: cricket + football ═══════════════════ */
+const PITCH={x:1288,y:733};
+const CRICKET={
+  state:'idle', t:0, ball:{x:0,y:0,vx:0,vy:0,live:false},
+  bowler:{x:PITCH.x-4,y:PITCH.y-104,px:PITCH.x-4,py:PITCH.y-104},
+  bat:{swing:0}, fielderChase:null, hits:0, targetShout:0
+};
+const FIELDERS=[
+  {x:PITCH.x-78,y:PITCH.y-30,ox:0,oy:0},
+  {x:PITCH.x+84,y:PITCH.y-16,ox:0,oy:0},
+  {x:PITCH.x-58,y:PITCH.y+54,ox:0,oy:0},
+  {x:PITCH.x+66,y:PITCH.y+58,ox:0,oy:0},
+  {x:PITCH.x+6,y:PITCH.y-86,ox:0,oy:0},
+];
+const FOOTBALL_PLAYERS=[];
+(function(){
+  const f=FOOTBALL, teams=[['#2f6fb0','#255a92'],['#c9483a','#a83a2e']];
+  for(let i=0;i<8;i++){
+    const side=i<4?0:1;
+    FOOTBALL_PLAYERS.push({
+      side, hx:f.x+f.w*(side? 0.68:0.32)+ (i%4-1.5)*20, hy:f.y+f.h*(0.3+0.14*(i%4)),
+      x:0,y:0, shirt:teams[side][0], phase:rrange(0,6), kick:0
+    });
+  }
+  for(const p of FOOTBALL_PLAYERS){ p.x=p.hx; p.y=p.hy; }
+})();
+const FBALL={x:FOOTBALL.x+FOOTBALL.w/2,y:FOOTBALL.y+FOOTBALL.h/2,vx:22,vy:14};
+
+function updateSports(dt){
+  /* ── cricket ── */
+  const C=CRICKET, b=C.ball;
+  C.t+=dt;
+  if(C.state==='idle' && C.t>1.2){ C.state='runup'; C.t=0;
+    C.bowler.x=PITCH.x-4; C.bowler.y=PITCH.y-108; }
+  else if(C.state==='runup'){
+    const k=Math.min(1,C.t/0.85);
+    C.bowler.y=PITCH.y-108+k*52;
+    C.bowler.x=PITCH.x-4+Math.sin(k*6)*1.5;
+    if(k>=1){ C.state='deliver'; C.t=0;
+      b.x=PITCH.x-2; b.y=PITCH.y-52; b.live=true;
+      b.vx=(Math.random()-0.5)*10; b.vy=210; }
+  }
+  else if(C.state==='deliver'){
+    b.x+=b.vx*dt; b.y+=b.vy*dt;
+    if(b.y>PITCH.y+18){
+      const hit=Math.random()<0.72;
+      if(hit){
+        C.state='hit'; C.t=0; C.bat.swing=1; C.hits++;
+        const ang=Math.PI*(0.15+Math.random()*0.7);
+        const sp=190+Math.random()*150;
+        b.vx=Math.cos(ang)*sp*(Math.random()<0.5?-1:1);
+        b.vy=-Math.abs(Math.sin(ang))*sp*0.55;
+        burst(b.x,b.y,5);
+        if(C.hits%4===0) shout('ছক্কা!');
+      } else { C.state='miss'; C.t=0; b.vx*=0.2; b.vy=120; }
+      C.fielderChase=null;
+    }
+  }
+  else if(C.state==='hit'||C.state==='miss'){
+    b.x+=b.vx*dt; b.y+=b.vy*dt; b.vx*=0.985; b.vy*=0.985;
+    if(C.state==='hit'&&!C.fielderChase){
+      let best=null,bd=1e9;
+      for(const f of FIELDERS){ const d=Math.hypot(f.x-b.x,f.y-b.y); if(d<bd){bd=d;best=f;} }
+      C.fielderChase=best;
+    }
+    if(C.fielderChase){
+      const f=C.fielderChase, d=Math.hypot(b.x-f.x,b.y-f.y);
+      if(d>6){ f.x+=(b.x-f.x)/d*Math.min(58*dt,d); f.y+=(b.y-f.y)/d*Math.min(58*dt,d); }
+    }
+    const far=Math.hypot(b.x-PITCH.x,b.y-PITCH.y)>108;
+    if(far||C.t>2.4){ C.state='reset'; C.t=0; b.live=false; }
+  }
+  else if(C.state==='reset'){
+    if(C.t>0.9){
+      C.state='idle'; C.t=0;
+      for(const f of FIELDERS){ /* drift home slowly */ }
+      C.bowler.x=PITCH.x-4; C.bowler.y=PITCH.y-104;
+    }
+  }
+  C.bat.swing=Math.max(0,C.bat.swing-dt*3.4);
+  // fielders ease back to their spots
+  for(const f of FIELDERS){
+    const hx=PITCH.x+ (f.ox||0), hy=PITCH.y+f.oy; // ox unused; recompute below
+  }
+  FIELDERS.forEach((f,i)=>{
+    const home=[[PITCH.x-78,PITCH.y-30],[PITCH.x+84,PITCH.y-16],[PITCH.x-58,PITCH.y+54],
+                [PITCH.x+66,PITCH.y+58],[PITCH.x+6,PITCH.y-86]][i];
+    if(C.fielderChase!==f){
+      f.x+=(home[0]-f.x)*Math.min(1,dt*0.5);
+      f.y+=(home[1]-f.y)*Math.min(1,dt*0.5);
+    }
+  });
+
+  /* ── football ── */
+  const f=FOOTBALL, fb=FBALL;
+  fb.x+=fb.vx*dt; fb.y+=fb.vy*dt;
+  fb.vx*=0.992; fb.vy*=0.992;
+  if(fb.x<f.x+8){ fb.x=f.x+8; fb.vx=Math.abs(fb.vx)*0.8; }
+  if(fb.x>f.x+f.w-8){ fb.x=f.x+f.w-8; fb.vx=-Math.abs(fb.vx)*0.8; }
+  if(fb.y<f.y+8){ fb.y=f.y+8; fb.vy=Math.abs(fb.vy)*0.8; }
+  if(fb.y>f.y+f.h-8){ fb.y=f.y+f.h-8; fb.vy=-Math.abs(fb.vy)*0.8; }
+  for(const p of FOOTBALL_PLAYERS){
+    const d=Math.hypot(fb.x-p.x,fb.y-p.y);
+    const reach = p.side===0 ? 62 : 58;
+    if(d<reach && d>0.01){
+      const sp=46+ (p.side===0?8:0);
+      p.x+=(fb.x-p.x)/d*sp*dt;
+      p.y+=(fb.y-p.y)/d*sp*dt;
+      p.phase+=dt*9;
+      if(d<13){ p.kick=1; const ang=Math.atan2(fb.y-p.y,fb.x-p.x)+rrange(-0.5,0.5);
+        fb.vx=Math.cos(ang)*160; fb.vy=Math.sin(ang)*160; }
+    } else {
+      // drift back toward formation
+      p.x+=(p.hx-p.x)*Math.min(1,dt*0.35);
+      p.y+=(p.hy-p.y)*Math.min(1,dt*0.35);
+      p.phase+=dt*3;
+    }
+    p.kick=Math.max(0,p.kick-dt*3);
+  }
+}
+function shout(text){
+  if(Math.random()<0.5) return;
+  cricketShout=text; cricketShoutT=0;
+}
+let cricketShout='', cricketShoutT=99;
+
+function drawSports(){
+  /* cricket players */
+  const C=CRICKET;
+  const person=(x,y,shirt,pant,scale,swing)=>{
+    ctx.save();
+    ctx.globalAlpha=.22; ctx.fillStyle='#20361a';
+    ctx.beginPath(); ctx.ellipse(x+1.5,y+5,5.2,2.4,0,0,TAU); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle=pant; roundRect(ctx,x-2.6,y-1,2.4,5,1.2); ctx.fill();
+    roundRect(ctx,x+0.3,y-1,2.4,5,1.2); ctx.fill();
+    ctx.fillStyle=shirt; roundRect(ctx,x-3.2,y-6.4,6.4,6,2); ctx.fill();
+    ctx.fillStyle='#d9a06a'; ctx.beginPath(); ctx.arc(x,y-8.2,2.6,0,TAU); ctx.fill();
+    if(swing){ // bat
+      ctx.strokeStyle='#c9a06a'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(x+2,y-5); ctx.lineTo(x+7,y-1); ctx.stroke();
+    }
+    ctx.restore();
+  };
+  // fielders
+  for(const f of FIELDERS) person(f.x,f.y,'#f2f4f0','#e8e6de',1.2,false);
+  // keeper
+  person(PITCH.x,PITCH.y+62,'#e9ecdf','#e8e6de',1.2,false);
+  // non-striker
+  person(PITCH.x-14,PITCH.y-26,'#f2f4f0','#e8e6de',1.25,false);
+  // batsman (swinging)
+  person(PITCH.x+14,PITCH.y+26,'#f2f4f0','#e8e6de',1.25,C.bat.swing>0.25);
+  // bowler
+  person(C.bowler.x,C.bowler.y,'#dfe6d6','#e8e6de',1.25,false);
+  // ball
+  if(C.ball.live){
+    ctx.fillStyle='#c0392b';
+    ctx.beginPath(); ctx.arc(C.ball.x,C.ball.y,2.4,0,TAU); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=.7; ctx.stroke();
+  }
+  if(cricketShoutT<1.6){
+    cricketShoutT+=1/60;
+    ctx.save(); ctx.globalAlpha=1-cricketShoutT/1.6;
+    ctx.fillStyle='#ffffff'; ctx.font=FONT(12,800); ctx.textAlign='center';
+    ctx.fillText(cricketShout,PITCH.x,PITCH.y-96-cricketShoutT*14);
+    ctx.restore();
+  } else if(cricketShoutT<99) cricketShoutT=99;
+
+  /* football players + ball */
+  for(const p of FOOTBALL_PLAYERS){
+    const bob=Math.sin(p.phase)*0.9;
+    ctx.save();
+    ctx.globalAlpha=.22; ctx.fillStyle='#20361a';
+    ctx.beginPath(); ctx.ellipse(p.x+1.5,p.y+5,5,2.3,0,0,TAU); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.fillStyle='#28374d'; roundRect(ctx,p.x-3.1,p.y-1+bob*0.3,2.9,6,1.4); ctx.fill();
+    roundRect(ctx,p.x+0.4,p.y-1-bob*0.3,2.9,6,1.4); ctx.fill();
+    ctx.fillStyle=p.shirt; roundRect(ctx,p.x-3.9,p.y-7.9,7.8,7.2,2.4); ctx.fill();
+    ctx.fillStyle='#d9a06a'; ctx.beginPath(); ctx.arc(p.x,p.y-10,3.1,0,TAU); ctx.fill();
+    ctx.fillStyle='#2a2118'; ctx.beginPath(); ctx.arc(p.x,p.y-10.9,3,Math.PI*1.05,Math.PI*1.95); ctx.fill();
+    if(p.kick>0.5){ ctx.strokeStyle='#f4f4f0'; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(p.x+2,p.y); ctx.lineTo(p.x+6,p.y-2); ctx.stroke(); }
+    ctx.restore();
+  }
+  ctx.fillStyle='#f7f7f2';
+  ctx.beginPath(); ctx.arc(FBALL.x,FBALL.y,2.6,0,TAU); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=.7; ctx.stroke();
+}
+
+
+/* ═════════ রেলস্টেশন · রাজশাহী বিশ্ববিদ্যালয় ═════════ */
+function drawStation(){
+  const px=1330, pw=470, py=196, ph=54;
+  // platform slab
+  bx.save(); bx.globalAlpha=.22; bx.fillStyle='#22331d';
+  roundRect(bx,px+8,py+10,pw,ph,6); bx.fill(); bx.restore();
+  bx.fillStyle='#d9d2bd'; roundRect(bx,px,py,pw,ph,6); bx.fill();
+  bx.strokeStyle='rgba(90,80,60,.30)'; bx.lineWidth=2; bx.stroke();
+  // tactile safety strip along the rail edge
+  bx.fillStyle='#e8c34a'; roundRect(bx,px+6,py+2,pw-12,7,3); bx.fill();
+  bx.fillStyle='rgba(150,120,30,.35)';
+  for(let x=px+10;x<px+pw-10;x+=9) bx.fillRect(x,py+3,4,5);
+  // shelter roof
+  bx.fillStyle='#7d8f7a'; roundRect(bx,px+80,py+14,pw-170,26,5); bx.fill();
+  bx.fillStyle='#9fb29a'; roundRect(bx,px+86,py+16,pw-182,8,4); bx.fill();
+  bx.strokeStyle='#5f6d5d'; bx.lineWidth=3;
+  for(let x=px+96;x<px+pw-96;x+=56){
+    bx.beginPath(); bx.moveTo(x,py+40); bx.lineTo(x,py+ph-2); bx.stroke();
+  }
+  // benches
+  for(let x=px+110;x<px+pw-110;x+=90){
+    bx.fillStyle='#b98a4e'; roundRect(bx,x,py+44,34,6,2); bx.fill();
+  }
+  // station name board (bangla)
+  const sx=px+pw/2, sy=py-46;
+  bx.fillStyle='#123a63'; roundRect(bx,sx-150,sy,300,38,6); bx.fill();
+  bx.strokeStyle='#f2f6f6'; bx.lineWidth=2; bx.stroke();
+  bx.fillStyle='#f6f8f6'; bx.textAlign='center'; bx.textBaseline='middle';
+  bx.font=FONT(15,800); bx.fillText('রাজশাহী বিশ্ববিদ্যালয়',sx,sy+14);
+  bx.font=FONT(8.5,700); bx.fillStyle='#a9cdea';
+  bx.fillText('RAJSHAHI UNIVERSITY  ·  STATION',sx,sy+29);
+  // lamp posts on the platform
+  for(const lx of [px+40,px+pw-40]) lampPost(lx,py+ph-6,46);
+  // flower bed
+  for(let i=0;i<60;i++){
+    const fx=px+20+rrange(0,pw-40), fy=py+ph+6+rrange(0,10);
+    bx.fillStyle=['#f4a02a','#ffd75e','#f2f2ea','#e2603a'][i%4];
+    bx.beginPath(); bx.arc(fx,fy,rrange(1.4,2.4),0,TAU); bx.fill();
+  }
+}
+
+/* ═════════ বধ্যভূমি স্মৃতিস্তম্ভ — round pit + tall pillar ═════════ */
+function drawBoddhovumi(cx,cy){
+  // paved round approach
+  bx.beginPath(); bx.arc(cx,cy,86,0,TAU); bx.fillStyle='#d7cbaa'; bx.fill();
+  bx.strokeStyle='rgba(120,105,70,.35)'; bx.lineWidth=3; bx.stroke();
+  bx.save(); bx.strokeStyle='rgba(130,115,80,.25)'; bx.lineWidth=2;
+  for(let a=0;a<TAU;a+=TAU/20){
+    bx.beginPath(); bx.moveTo(cx+Math.cos(a)*30,cy+Math.sin(a)*30);
+    bx.lineTo(cx+Math.cos(a)*82,cy+Math.sin(a)*82); bx.stroke();
+  } bx.restore();
+  // the pit
+  bx.beginPath(); bx.arc(cx,cy,46,0,TAU);
+  const g=bx.createRadialGradient(cx,cy-10,6,cx,cy,46);
+  g.addColorStop(0,'#8d8574'); g.addColorStop(1,'#5f5a4e');
+  bx.fillStyle=g; bx.fill();
+  bx.strokeStyle='#efe9d6'; bx.lineWidth=6; bx.stroke();
+  // concrete altar inside
+  bx.fillStyle='#cfc7b2'; bx.beginPath(); bx.arc(cx,cy,22,0,TAU); bx.fill();
+  // the 42-ft pillar
+  bx.save();
+  bx.globalAlpha=.22; bx.fillStyle='#2a2a22';
+  roundRect(bx,cx+6,cy-58,14,62,4); bx.fill(); bx.restore();
+  const pg=bx.createLinearGradient(cx-8,0,cx+8,0);
+  pg.addColorStop(0,'#ffffff'); pg.addColorStop(.5,'#f2efe6'); pg.addColorStop(1,'#c9c3b3');
+  bx.fillStyle=pg; roundRect(bx,cx-8,cy-166,16,168,3); bx.fill();
+  bx.strokeStyle='rgba(120,115,100,.35)'; bx.lineWidth=1; bx.stroke();
+  // flame-like top
+  bx.fillStyle='#e8dfc8';
+  bx.beginPath(); bx.moveTo(cx-9,cy-166); bx.lineTo(cx,cy-184); bx.lineTo(cx+9,cy-166); bx.closePath(); bx.fill();
+  bx.fillStyle='#c4553a'; bx.beginPath(); bx.arc(cx,cy-176,3.4,0,TAU); bx.fill();
+  // side walls of the pit with names plate
+  bx.fillStyle='#efe9d6'; roundRect(bx,cx-58,cy+30,30,16,2); bx.fill();
+  bx.fillStyle='#7a3b2a'; bx.font=FONT(6.5,800); bx.textAlign='center'; bx.textBaseline='middle';
+  bx.fillText('বধ্যভূমি',cx-43,cy+38);
+  // banyan tree beside it (as at the real site)
+  tallAvenueTree(cx+70,cy+34,1.25);
+  plaque(bx,'বধ্যভূমি স্মৃতিস্তম্ভ',cx,cy+104,12);
+}
+
+/* ═════════ ট্রেন — ক্যাম্পাসের ভেতর দিয়ে ═════════ */
+const trains=[];
+function spawnTrain(){
+  const dir=Math.random()<0.5?1:-1;
+  const cars=4+Math.floor(Math.random()*3);
+  trains.push({x:dir>0?-420:W+420, y:150, dir, sp:rrange(120,190), cars,
+               col:Math.random()<0.5?'#3f6ea8':'#2f7d6a', t:0});
+}
+let trainCool=2;
+function updateTrains(dt){
+  trainCool=Math.max(0,trainCool-dt);
+  if(trains.length===0 && trainCool<=0) spawnTrain();     // only ever one train on the line
+  for(let i=trains.length-1;i>=0;i--){
+    const t=trains[i];
+    t.x+=t.sp*t.dir*dt; t.t+=dt;
+    if((t.dir>0&&t.x>W+520)||(t.dir<0&&t.x<-520)){ trains.splice(i,1); trainCool=2+Math.random()*3.5; }
+  }
+}
+function drawTrain(t){
+  const L=112;
+  ctx.save();
+  for(let c=0;c<t.cars;c++){
+    const cx=t.x - t.dir*c*(L+10);
+    // shadow on the rails
+    ctx.globalAlpha=.25; ctx.fillStyle='#1b2a18';
+    roundRect(ctx,cx-L/2+4,150-16,L,34,6); ctx.fill(); ctx.globalAlpha=1;
+    // body
+    ctx.fillStyle=c%2? '#e9edf0':'#dfe5ea';
+    roundRect(ctx,cx-L/2,150-22,L,40,5); ctx.fill();
+    ctx.strokeStyle='rgba(30,50,70,.35)'; ctx.lineWidth=1.5; ctx.stroke();
+    // window band
+    ctx.fillStyle=t.col;
+    roundRect(ctx,cx-L/2+6,150-14,L-12,15,3); ctx.fill();
+    ctx.fillStyle='#bfe0f2';
+    for(let i=0;i<7;i++) roundRect(ctx,cx-L/2+9+i*((L-18)/7),150-12,((L-18)/7)-3,11,2),ctx.fill();
+    // roof
+    ctx.fillStyle='#b9c2c8'; roundRect(ctx,cx-L/2+3,150-26,L-6,6,3); ctx.fill();
+    // stripe
+    ctx.fillStyle='#c4553a'; roundRect(ctx,cx-L/2+4,150+8,L-8,4,2); ctx.fill();
+    // wheels
+    ctx.fillStyle='#2a2a2a';
+    for(const wx of [cx-L/2+20,cx+L/2-20]){
+      ctx.beginPath(); ctx.arc(wx,150+18,4.5,0,TAU); ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+/* ═══════════════════ পাখি — birds crossing the sky ═══════════════════ */
+const flocks=[];
+let flockTimer=rrange(3,7);
+function spawnFlock(){
+  const dir=Math.random()<0.5?1:-1;
+  const y=rrange(80,H-160);
+  const n=4+Math.floor(Math.random()*6);
+  const speed=rrange(90,150)*dir;
+  const birds=[];
+  for(let i=0;i<n;i++){
+    birds.push({
+      ox:-dir*i*rrange(16,26), oy:(i%2?1:-1)*rrange(4,14)+rrange(-4,4),
+      ph:rrange(0,TAU), flap:rrange(7,11)
+    });
+  }
+  flocks.push({x:dir>0?-60:W+60, y, vx:speed, t:0, birds, dir});
+}
+function updateBirds(dt,T2){
+  flockTimer-=dt;
+  if(flockTimer<=0){ spawnFlock(); flockTimer=rrange(7,15); }
+  for(let i=flocks.length-1;i>=0;i--){
+    const f=flocks[i]; f.x+=f.vx*dt; f.t+=dt;
+    const drift=Math.sin(f.t*0.8)*0.35;
+    f.y+=Math.sin(f.t*1.3)*10*dt+drift;
+    if((f.dir>0&&f.x>W+140)||(f.dir<0&&f.x<-140)) flocks.splice(i,1);
+  }
+}
+function drawBirds(){
+  for(const f of flocks){
+    // soft shadow of the flock on the ground
+    ctx.save(); ctx.globalAlpha=.10; ctx.fillStyle='#1b2f16';
+    for(const b of f.birds){
+      ctx.beginPath();
+      ctx.ellipse(f.x+b.ox+16, f.y+b.oy+46, 5, 2.2, 0, 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+    for(const b of f.birds){
+      const x=f.x+b.ox, y=f.y+b.oy+Math.sin(T*2+b.ph)*3;
+      const flap=Math.sin(T*b.flap+b.ph);
+      ctx.save(); ctx.translate(x,y);
+      ctx.strokeStyle='#2a3a33'; ctx.lineWidth=1.8; ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(-1,0);
+      ctx.quadraticCurveTo(-5,-4-flap*3.4,-9,-1.2-flap*1.6);
+      ctx.moveTo(1,0);
+      ctx.quadraticCurveTo(5,-4-flap*3.4,9,-1.2-flap*1.6);
+      ctx.stroke();
+      ctx.fillStyle='#384a41'; ctx.beginPath(); ctx.ellipse(0,0,2.2,1.3,0,0,TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+/* ═══════════════════ map overlay: pins, names and little vehicle marks ═══════════════════ */
+function drawMapOverlay(){
+  const a=clamp((mapA-0.10)/0.30,0,1);
+  if(a<=0.02) return;
+  ctx.save();
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.globalAlpha=a;
+  const toS=(x,y)=>({x:(x-cam.x-vw/2)*zoom+vw/2, y:(y-cam.y-vh/2)*zoom+vh/2});
+  const boxes=[];
+  const free=b=>{
+    for(const o of boxes)
+      if(b.x0<o.x1&&b.x1>o.x0&&b.y0<o.y1&&b.y1>o.y0) return false;
+    boxes.push(b); return true;
+  };
+  const haloText=(txt,x,y)=>{ ctx.lineWidth=3.6; ctx.strokeStyle='rgba(255,255,255,.94)';
+    ctx.strokeText(txt,x,y); ctx.fillStyle='#2d3c2a'; ctx.fillText(txt,x,y); };
+
+  const pins=LANDMARKS.map(l=>({l,s:toS(l.x,l.y)}))
+    .filter(o=>o.s.x>-70&&o.s.x<vw+70&&o.s.y>-50&&o.s.y<vh+50);
+
+  // little building names first (they sit under the pins)
+  if(zoom>=0.46){
+    ctx.font=FONT(9.5,600); ctx.textAlign='left'; ctx.textBaseline='middle';
+    const lmNames=new Set(LANDMARKS.map(l=>l.name));
+    for(const b of BLD){
+      if(lmNames.has(b.l)) continue;               // the pin already names it
+      if(lmNames.has(b.l)) continue;                 // the pin already names it
+      if(b.x+b.w<70||b.x>2530) continue;             // keep labels inside the wall
+      const q=toS(b.x+b.w/2,b.y+b.h/2);
+      if(q.x<-40||q.x>vw+40||q.y<-20||q.y>vh+20) continue;
+      const t=b.l, tw=ctx.measureText(t).width;
+      const bx0=q.x-tw/2-3, by0=q.y-8, bx1=q.x+tw/2+3, by1=q.y+8;
+      if(bx0<58||bx1>vw-58) continue;
+      if(!free({x0:bx0,x1:bx1,y0:by0,y1:by1})) continue;
+      ctx.globalAlpha=a*0.85;
+      haloText(t,bx0+3,q.y);
+      ctx.globalAlpha=a;
+    }
+  }
+
+  // landmark pins (smaller when the whole campus is in view)
+  const ps_=clamp(zoom/0.46,0.72,1.3);
+  for(const {l,s} of pins){
+    const got=found.has(l.id);
+    ctx.save(); ctx.translate(s.x,s.y); ctx.scale(ps_,ps_);
+    ctx.fillStyle='rgba(40,52,36,.16)'; ctx.beginPath(); ctx.ellipse(0,1.5,7.5,3,0,0,TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.bezierCurveTo(-8.5,-8.5,-9.5,-20,0,-20);
+    ctx.bezierCurveTo(9.5,-20,8.5,-8.5,0,0); ctx.closePath();
+    ctx.fillStyle=got?'#5b9a44':'#e0563c'; ctx.fill();
+    ctx.strokeStyle='#ffffff'; ctx.lineWidth=1.7; ctx.stroke();
+    ctx.fillStyle='#ffffff'; ctx.beginPath(); ctx.arc(0,-14,3.2,0,TAU); ctx.fill();
+    ctx.restore();
+  }
+
+  // then their names, only where there is room
+  const showNames = zoom>=0.26;
+  ctx.font=FONT(11.5,700); ctx.textAlign='left'; ctx.textBaseline='middle';
+  for(const {l,s} of pins){
+    if(!showNames) break;
+    const t=l.name, tw=ctx.measureText(t).width, th=15;
+    const cands=[[s.x+11,s.y-7],[s.x-tw-11,s.y-7],[s.x-tw/2,s.y+9],[s.x-tw/2,s.y-31]];
+    for(const [lx,ly] of cands){
+      const b={x0:lx-4,x1:lx+tw+4,y0:ly-th/2-2,y1:ly+th/2+2};
+      if(b.x0<3||b.x1>vw-3||b.y0<3||b.y1>vh-3) continue;
+      if(!free(b)) continue;
+      haloText(t,lx,ly);
+      break;
+    }
+  }
+
+  // vehicles + player as map marks
+  for(const b of buses){
+    const q=toS(b.x,b.y);
+    if(q.x<-20||q.x>vw+20||q.y<-20||q.y>vh+20) continue;
+    ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(b.ang);
+    ctx.fillStyle='rgba(30,45,60,.18)'; roundRect(ctx,-10,-5.5,20,11,3); ctx.fill();
+    ctx.fillStyle='#2f86c8'; roundRect(ctx,-9,-4.5,18,9,3); ctx.fill();
+    ctx.fillStyle='#eaf6ff'; roundRect(ctx,-5.5,-2.2,9,4.4,2); ctx.fill();
+    ctx.restore();
+  }
+  for(const r of ricks){
+    const q=toS(r.x,r.y);
+    if(q.x<-20||q.x>vw+20||q.y<-20||q.y>vh+20) continue;
+    ctx.beginPath(); ctx.arc(q.x,q.y,3.4,0,TAU);
+    ctx.fillStyle='#2f7d4a'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1.4; ctx.stroke();
+  }
+  for(const tr of trains){
+    const tx=tr.x||0;
+    if(tx<30||tx>W-30) continue;
+    const q=toS(tx,150);
+    ctx.fillStyle='#8b8377'; roundRect(ctx,q.x-40,q.y-4.5,80,9,4); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.75)'; ctx.lineWidth=1.5; ctx.stroke();
+  }
+  const p=ride||player, ps=toS(p.x,p.y);
+  ctx.beginPath(); ctx.arc(ps.x,ps.y,8.5,0,TAU);
+  ctx.fillStyle='rgba(47,111,176,.22)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(ps.x,ps.y,4.6,0,TAU);
+  ctx.fillStyle='#2f6fb0'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.restore();
+}
+
+/* ═══════════════════ loop ═══════════════════ */
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.045,(now-last)/1000)||.016;
+  last=now;T+=dt;
+
+  if(running&&!cardOpen){ elapsed+=dt; updatePlayer(dt); }
+  else if(cardOpen){ /* paused */ }
+
+  for(const b of buses) updateVehicle(b,dt);
+  for(const r of ricks) updateVehicle(r,dt);
+  updateNPCs(dt);
+  separateCrowd();
+  separateVehicles();
+  updateParticles(dt);
+  updateSports(dt);
+  updateBirds(dt,T);
+  updateTrains(dt);
+  updateTour(dt);
+  updateWorldAudio(dt);
+
+  // rickshaw-wala announces landmarks you pass (once per ride)
+  if(running&&ride&&ride.type==='rick'&&!cardOpen){
+    for(const sp of TOUR_SPOTS){
+      if(rideSaid.has(sp.key)) continue;
+      if(Math.hypot(sp.x-ride.x,sp.y-ride.y)<sp.r*0.9){
+        rideSaid.add(sp.key);
+        if(!tour.active) speak(sp.line,{hold:Math.max(4000,sp.line.length*110)});
+        break;
+      }
+    }
+  } else if(!ride){ rideSaid.clear(); }
+
+  // collect memories on touch
+  if(running&&!cardOpen&&!ride){
+    for(const r of RELICS){
+      if(r.got) continue;
+      if(Math.hypot(r.x-player.x,r.y-player.y)<46){
+        r.got=true; relicsGot++;
+        burst(r.x,r.y,14); sfxCollect();
+        el.hintText.textContent='স্মৃতি সংগ্রহ ✓ '+r.n+'  ('+bn(relicsGot)+'/'+bn(RELICS.length)+')';
+        el.hint.classList.add('on');
+        setTimeout(()=>el.hint.classList.remove('on'),1600);
+      }
+    }
+  }
+
+  // proximity: vehicles first, then landmarks
+  nearVeh = running&&!ride ? nearestVehicle() : null;
+  let best=null,bestD=1e9;
+  for(const l of LANDMARKS){
+    const d=Math.hypot(l.x-player.x,l.y-player.y);
+    if(d<l.r&&d<bestD){best=l;bestD=d;}
+  }
+  nearId=best?best.id:null;
+
+  // camera
+  zoom=lerp(zoom,zoomT,Math.min(1,dt*9));
+  const halfW=vw/(2*zoom), halfH=vh/(2*zoom);   // world units visible left/right of centre
+  const focus = ride || player;
+  const leadX = ride?Math.cos(ride.ang)*70:player.vx*.16;
+  const leadY = ride?Math.sin(ride.ang)*70:player.vy*.16;
+  // a light pan only lasts while you stand still; walking recentres the view
+  if(player.moving||ride) { panX=lerp(panX,0,Math.min(1,dt*1.6)); panY=lerp(panY,0,Math.min(1,dt*1.6)); }
+  let vcx=focus.x+leadX+panX, vcy=focus.y+leadY+panY;
+  if(W<halfW*2) vcx=W/2; else vcx=clamp(vcx,halfW,W-halfW);   // zoomed right out: centre the whole map
+  if(H<halfH*2) vcy=H/2; else vcy=clamp(vcy,halfH,H-halfH);
+  const tcx=vcx-vw/2, tcy=vcy-vh/2;
+  const ck=Math.min(1,dt*(ride?4.5:7.5));
+  cam.x=lerp(cam.x,tcx,ck);cam.y=lerp(cam.y,tcy,ck);
+
+  let sx=0,sy=0;
+  if(shake>.1){ shake=Math.max(0,shake-dt*38);
+    sx=Math.sin(T*61+shakeSeed)*shake; sy=Math.cos(T*73+shakeSeed)*shake*.8; }
+
+  // zoomed far out the drawn world gives way to a flat map
+  let ma=clamp((0.90-zoom)/0.26,0,1); mapA=ma*ma*(3-2*ma);
+
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,vw,vh);
+  ctx.save();
+  ctx.translate(vw/2,vh/2); ctx.scale(zoom,zoom); ctx.translate(-vw/2,-vh/2);
+  ctx.translate(-cam.x+sx,-cam.y+sy);
+  if(mapA>0.002){ ctx.globalAlpha=mapA*0.96; ctx.fillStyle='#edece6';
+    ctx.fillRect(-3000,-3000,W+6000,H+6000); ctx.globalAlpha=1; }
+
+  const pad=Math.ceil(60/zoom)+40;
+  const vx0=Math.max(0,Math.floor(cam.x-pad)),vy0=Math.max(0,Math.floor(cam.y-pad));
+  const vw2=Math.min(W-vx0,Math.ceil(vw/zoom)+pad*2),vh2=Math.min(H-vy0,Math.ceil(vh/zoom)+pad*2);
+  if(vw2>0&&vh2>0){
+    if(mapA<0.999){ ctx.globalAlpha=1-mapA; ctx.drawImage(bg,vx0,vy0,vw2,vh2,vx0,vy0,vw2,vh2); }
+    if(mapA>0.001){ ctx.globalAlpha=mapA;   ctx.drawImage(mapBg,vx0,vy0,vw2,vh2,vx0,vy0,vw2,vh2); }
+    ctx.globalAlpha=1;
+  }
+
+  const drawn = mapA<0.26;
+  if(drawn){
+  for(const l of LANDMARKS) drawBeacon(l);
+  for(const r of RELICS){
+    if(r.got) continue;
+    const bob=Math.sin(T*3+r.x*0.01)*3;
+    ctx.save();
+    ctx.globalAlpha=.18+.08*Math.sin(T*4+r.y);
+    ctx.fillStyle='#ffc44d';
+    ctx.beginPath(); ctx.arc(r.x,r.y,16,0,TAU); ctx.fill();
+    ctx.globalAlpha=.95;
+    ctx.translate(r.x,r.y+bob);
+    ctx.rotate(Math.sin(T*2+r.x)*0.18);
+    ctx.fillStyle='#fff3cf'; ctx.strokeStyle='#c99a2e'; ctx.lineWidth=1.6;
+    roundRect(ctx,-8,-8,16,16,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='#e0a92f'; ctx.font='800 10px system-ui,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('★',0,0.5);
+    ctx.restore();
+  }
+  drawNPCs();
+  drawRomance();
+  for(const r of ricks) drawRickshaw(r);
+  const bcs=Math.cos(0);   // cheap cull: skip buses far outside the view
+  for(const b of buses){
+    if(Math.abs(b.x-(cam.x+vw/2/zoom))<(vw/zoom)*0.6+220 &&
+       Math.abs(b.y-(cam.y+vh/2/zoom))<(vh/zoom)*0.6+220) drawRUBus(b);
+  }
+  drawSports();
+  drawBirds();
+  for(const tr of trains) drawTrain(tr);
+  drawParticles();
+  }   // end drawn-sprites block
+
+  if(moveTarget&&drawn){
+    const k=0.5+0.5*Math.sin(T*8);
+    ctx.save(); ctx.globalAlpha=.55+k*.3;
+    ctx.strokeStyle='#8ee04a'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.arc(moveTarget.x,moveTarget.y,10+k*4,0,TAU); ctx.stroke();
+    ctx.globalAlpha=.22; ctx.fillStyle='#8ee04a';
+    ctx.beginPath(); ctx.arc(moveTarget.x,moveTarget.y,7,0,TAU); ctx.fill();
+    ctx.restore();
+  }
+  if(running&&!ride&&drawn) drawCharacter(player.x,player.y,player.dir,player.phase,player.squash,1.06,PLAYER_LOOK);
+
+  // tooltip above the player / vehicle
+  if(running&&!cardOpen&&drawn){
+    const pc2=pickContext();
+    let txt=null,col='#f2ffe9';
+    if(pc2&&pc2.type==='ride'){ txt='নামতে E চাপো'; col='#ffe9b8'; }
+    else if(pc2&&pc2.type==='landmark'){ txt=(found.has(pc2.l.id)?'✓ ':'')+pc2.l.name; col=found.has(pc2.l.id)?'#d9f7b8':'#f2ffe9'; }
+    else if(pc2){ txt=(pc2.type==='bus'?'🚌 বাসে ওঠো — রিং রোড':'🛺 রিকশায় ওঠো'); col='#d9ecff'; }
+    if(txt){
+      const ax=ride?ride.x:player.x, ay=(ride?ride.y:player.y)-((ride&&ride.type==='bus')?62:44)+Math.sin(T*3)*2;
+      ctx.save();ctx.font=FONT(12.5,700);ctx.textAlign='center';ctx.textBaseline='middle';
+      const w=ctx.measureText(txt).width+22;
+      ctx.globalAlpha=.95;ctx.fillStyle='rgba(13,20,18,.86)';
+      roundRect(ctx,ax-w/2,ay,w,24,12);ctx.fill();
+      ctx.strokeStyle=(pc2&&(pc2.type==='bus'||pc2.type==='rick'))?'rgba(95,192,240,.6)':'rgba(255,255,255,.22)';
+      ctx.lineWidth=1;ctx.stroke();
+      ctx.fillStyle=col;ctx.fillText(txt,ax,ay+12.5);ctx.restore();
+    }
+  }
+  ctx.restore();
+
+  drawMapOverlay();
+
+  updateHud();
+  requestAnimationFrame(frame);
+}
+
+let hudTick=0;
+function updateHud(){
+  // compass
+  if(ride){
+    const nxt=ride.nextStop?` · পরের স্টপ: ${ride.nextStop}`:'';
+    el.cnear.textContent=(ride.type==='bus'?'🚌 রাবি বাস':'🛺 রিকশা');
+    el.cdist.textContent=(ride.type==='bus'?'রিং রোড'+nxt:'চলছি…')+' · E নামতে';
+    el.arrow.style.transform=`rotate(${ride.ang+Math.PI/2}rad)`;
+  }else{
+    let target=null,bd=1e9;
+    for(const l of LANDMARKS){
+      if(found.has(l.id))continue;
+      let d=Math.hypot(l.x-player.x,l.y-player.y);
+      if(l.id===compassHold) d*=0.72;            // hysteresis: don't flicker between spots
+      if(d<bd){bd=d;target=l;}
+    }
+    compassHold=target?target.id:null;
+    if(target){
+      const ang=Math.atan2(target.y-player.y,target.x-player.x);
+      el.arrow.style.transform=`rotate(${ang+Math.PI/2}rad)`;
+      el.cnear.textContent=target.name;
+      el.cdist.textContent=`${bn(Math.round(bd/10))} মি · ${bn(found.size)}/${bn(LANDMARKS.length)} সিল`;
+    }else{
+      el.cnear.textContent='সব দেখা হয়ে গেছে ✓';
+      el.cdist.textContent=`${bn(LANDMARKS.length)} / ${bn(LANDMARKS.length)} সিল`;
+    }
+  }
+  // hint
+  const pc=pickContext();
+  let txt=null,cls='';
+  if(pc&&pc.type==='ride'){ txt='নামতে চাপো'; }
+  else if(pc&&pc.type==='landmark'){ txt=(found.has(pc.l.id)?'আবার দেখো — ':'দেখো — ')+pc.l.name; }
+  else if(pc){ txt=(pc.type==='bus'?'বাসে ওঠো':'রিকশায় ওঠো'); cls=pc.type==='bus'?'bus':'rick'; }
+  const show=!!txt&&running&&!cardOpen;
+  el.hint.classList.toggle('on',show);
+  el.hint.classList.toggle('bus',cls==='bus');
+  el.hint.classList.toggle('rick',cls==='rick');
+  if(txt) el.hintText.textContent=txt;
+  const touchOn=document.getElementById('touch').classList.contains('on');
+  el.act.classList.toggle('on',!!(show&&touchOn));
+  el.act.classList.toggle('rid',!!ride||cls==='bus');
+  el.act.textContent=ride?'নামো':(cls==='bus'?'ওঠো':(cls==='rick'?'ওঠো':'দেখো'));
+  if(!hudTick){}
+}
+
+/* ═══════════════════ flow ═══════════════════ */
+function startGame(){
+  audio();
+  el.start.classList.add('hidden');
+  running=true;startedAt=performance.now();elapsed=0;
+  found.clear();refreshPassport();
+  player.x=860;player.y=1300;player.vx=0;player.vy=0;player.dir='up';
+  for(const b of buses){ b.x=b.bay.x;b.y=b.bay.y;b.ang=b.bay.ang;b.parked=true;
+    b.route=null;b.i=0;b.stop=null;b.wait=0;b.nextStop=null; }
+  ride=null;
+  cam.x=clamp(player.x-vw/2,0,Math.max(0,W-vw));
+  cam.y=clamp(player.y-vh/2,0,Math.max(0,H-vh));
+  particles.length=0;
+  tone(523,.15,'sine',.05);tone(784,.22,'sine',.05,.1);
+  pickBnVoice();
+  voiceNotice();
+  setTimeout(()=>{
+    if(running&&!ride) speak('ক্যাম্পাস ট্যুরে স্বাগতম! রিকশাওয়ালার কাছে গিয়ে ই চাপলে সে পুরো ক্যাম্পাস ঘুরিয়ে দেখাবে।',{hold:5000});
+  },800);
+}
+function winGame(){
+  running=false;sfxWin();
+  for(let i=0;i<5;i++) setTimeout(()=>burst(player.x,player.y-40,18),i*130);
+  const secs=Math.round(elapsed),mm=Math.floor(secs/60),ss=secs%60;
+  el.winStats.innerHTML=`সময় লেগেছে <b>${bn(mm)} মিনিট ${bn(ss)} সেকেন্ড</b> · ${bn(LANDMARKS.length)}টি স্পট<br>
+    <span style="font-size:12.5px;color:#8a8368">বাসে চড়ে পুরো রিং রোড একবার ঘুরে নিও 🚌</span>`;
+  el.winList.innerHTML=LANDMARKS.map(l=>`<span class="pill-mini">${l.icon} ${l.name}</span>`).join('');
+  el.win.classList.remove('hidden');
+}
+document.getElementById('startBtn').addEventListener('click',startGame);
+document.getElementById('againBtn').addEventListener('click',()=>{el.win.classList.add('hidden');startGame();});
+window.addEventListener('keydown',e=>{
+  if(e.key.toLowerCase()==='h'){ if(running) sfxHorn(); }
+});
+
+/* ═══════════════════ boot ═══════════════════ */
+resize();
+buildWorld();
+buildMapLayer();
+spawnNPCs();
+cam.x=clamp(1464-vw/2,0,Math.max(0,W-vw));
+cam.y=clamp(1400-vh/2,0,Math.max(0,H-vh));
+requestAnimationFrame(frame);
+window.__ru={makeBusRoute,engOn:()=>!!eng,actxState:()=>actx?actx.state:null,SOLIDS,BLD,LANDMARKS,RELICS,tour,buses,trains,zoomNow:()=>zoom,found,player,cam,bus,ricks,startGame,action,
+  get ride(){return ride},mount,dismount,BUS_STOPS};
+})();
+</script>
+</body>
+</html>
