@@ -1,0 +1,423 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2600 1900" preserveAspectRatio="xMidYMid meet" font-family="Hind Siliguri, Noto Sans Bengali, system-ui, sans-serif">
+<defs><linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcebc7"/><stop offset="1" stop-color="#d2e4b9"/></linearGradient><filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="3" dy="5" stdDeviation="5" flood-color="#41502f" flood-opacity="0.18"/></filter></defs>
+<rect width="2600" height="1900" fill="#eceae3"/>
+<rect x="-30" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="-30" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="162" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="354" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="546" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="738" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="930" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1122" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1314" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1506" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1698" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="1890" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2082" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2274" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2466" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="-30" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="128" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="286" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="444" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="602" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="760" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="918" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1076" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1234" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1392" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1550" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1708" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="1866" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="2658" y="2024" width="160" height="126" rx="8" fill="#f6f4ee"/>
+<rect x="44" y="304" width="2492" height="1150" rx="30" fill="#d9e8c4"/>
+<rect x="150" y="392" width="2280" height="1000" rx="24" fill="url(#grass)"/>
+<rect x="0" y="132" width="2600" height="36" fill="#cfccc2"/>
+<line x1="0" y1="150" x2="2600" y2="150" stroke="#fff" stroke-width="3" stroke-dasharray="18 15"/>
+<rect x="145" y="1195" width="2348" height="86" rx="8" fill="#e2ded2"/>
+<rect x="145" y="501" width="2348" height="82" rx="8" fill="#e2ded2"/>
+<rect x="145" y="501" width="86" height="780" rx="8" fill="#e2ded2"/>
+<rect x="2407" y="501" width="86" height="780" rx="8" fill="#e2ded2"/>
+<rect x="811" y="1271" width="98" height="174" rx="8" fill="#e2ded2"/>
+<rect x="1465" y="91" width="90" height="422" rx="8" fill="#e2ded2"/>
+<rect x="191" y="1271" width="82" height="120" rx="8" fill="#e2ded2"/>
+<rect x="1709" y="1271" width="82" height="120" rx="8" fill="#e2ded2"/>
+<rect x="150" y="1200" width="2338" height="76" rx="5" fill="#ffffff"/>
+<rect x="150" y="506" width="2338" height="72" rx="5" fill="#ffffff"/>
+<rect x="150" y="506" width="76" height="770" rx="5" fill="#ffffff"/>
+<rect x="2412" y="506" width="76" height="770" rx="5" fill="#ffffff"/>
+<rect x="816" y="1276" width="88" height="164" rx="5" fill="#ffffff"/>
+<rect x="1470" y="96" width="80" height="412" rx="5" fill="#ffffff"/>
+<rect x="196" y="1276" width="72" height="110" rx="5" fill="#ffffff"/>
+<rect x="1714" y="1276" width="72" height="110" rx="5" fill="#ffffff"/>
+<rect x="0" y="1470" width="2600" height="86" fill="#fcf2cf"/>
+<rect x="866" y="1552" width="1648" height="338" rx="18" fill="#d8d2c0"/>
+<rect x="880" y="1562" width="1620" height="318" rx="14" fill="#a9a598"/>
+<rect x="890" y="1586" width="1600" height="52" rx="10" fill="#7c7a73"/>
+<rect x="918" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="988" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1058" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1128" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1198" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1268" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1338" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1408" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1478" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1548" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1618" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1688" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1758" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1828" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1898" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1968" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="2038" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="2108" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="2178" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="2248" y="1735" width="52" height="84" rx="6" fill="#e8e6df"/>
+<rect x="1150" y="1556" width="470" height="30" rx="8" fill="#e9dfc6"/>
+<rect x="1180" y="1520" width="410" height="34" rx="8" fill="#1f5f8f"/>
+<text x="1385" y="1543" font-size="19" font-weight="800" fill="#eaf6ff" text-anchor="middle">রাবি বাস স্ট্যান্ড · ২০টি বাস</text>
+<rect x="1000" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1000" y="1332" width="96" height="10" rx="4" fill="#c4553a"/>
+<rect x="1096" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1096" y="1332" width="96" height="10" rx="4" fill="#2f7d4a"/>
+<rect x="1204" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1204" y="1332" width="96" height="10" rx="4" fill="#c98a2e"/>
+<rect x="1312" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1312" y="1332" width="96" height="10" rx="4" fill="#8a5a3a"/>
+<rect x="1420" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1420" y="1332" width="96" height="10" rx="4" fill="#b8543a"/>
+<rect x="1528" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1528" y="1332" width="96" height="10" rx="4" fill="#a9553c"/>
+<rect x="1888" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1888" y="1332" width="96" height="10" rx="4" fill="#2f8a6a"/>
+<rect x="1996" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="1996" y="1332" width="96" height="10" rx="4" fill="#8e4a7a"/>
+<rect x="2104" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="2104" y="1332" width="96" height="10" rx="4" fill="#c08a2e"/>
+<rect x="2212" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="2212" y="1332" width="96" height="10" rx="4" fill="#3f6ea8"/>
+<rect x="2320" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="2320" y="1332" width="96" height="10" rx="4" fill="#2f6fb0"/>
+<rect x="2428" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="2428" y="1332" width="96" height="10" rx="4" fill="#6a4fa0"/>
+<rect x="2440" y="1332" width="96" height="74" rx="5" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.6"/>
+<rect x="2440" y="1332" width="96" height="10" rx="4" fill="#c4553a"/>
+<rect x="1060" y="1288" width="1470" height="58" rx="10" fill="#e6d9bd"/>
+<text x="1048" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">চায়ের দোকান</text>
+<text x="1144" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">বিরিয়ানি</text>
+<text x="1252" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">ফুচকা</text>
+<text x="1360" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">রুটি-ডাল</text>
+<text x="1468" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">বার্গার</text>
+<text x="1576" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">মিষ্টি</text>
+<text x="1936" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">চটপটি</text>
+<text x="2044" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">কাবাব</text>
+<text x="2152" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">সিঙ্গারা</text>
+<text x="2260" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">লুচি</text>
+<text x="2368" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">জুস</text>
+<text x="2476" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">আইসক্রিম</text>
+<text x="2488" y="1424" font-size="12" font-weight="600" fill="#4a4433" text-anchor="middle">নুডলস</text>
+<text x="1084" y="1252" font-size="18" font-weight="800" fill="#8a4a2a" text-anchor="middle">খাবারের গলি</text>
+<ellipse cx="1288" cy="733" rx="202" ry="130" fill="#e9e2d2" stroke="#d2c9b4" stroke-width="3"/>
+<ellipse cx="1288" cy="733" rx="152" ry="88" fill="#c6dda7" stroke="#aacb8b" stroke-width="2"/>
+<rect x="1276" y="672" width="24" height="124" rx="4" fill="#e8dbb6"/>
+<rect x="1506" y="735" width="176" height="120" rx="12" fill="#84bedd"/>
+<rect x="1514" y="743" width="160" height="104" rx="9" fill="#a8d7ef"/>
+<rect x="230" y="1090" width="180" height="100" rx="5" fill="#c3dca3" stroke="#fff" stroke-width="3"/>
+<text x="320" y="1218" font-size="13" font-weight="600" fill="#3d4a37" text-anchor="middle">ফুটবল মাঠ</text>
+<ellipse cx="400" cy="1035" rx="92" ry="64" fill="#e3e0d1"/>
+<ellipse cx="400" cy="1035" rx="78" ry="51" fill="#84bedd"/>
+<ellipse cx="400" cy="1035" rx="72" ry="46" fill="#a8d7ef"/>
+<circle cx="1130" cy="960" r="94" fill="#e7e1d1"/>
+<circle cx="1130" cy="960" r="24" fill="#f6f3ea"/>
+<circle cx="2000" cy="470" r="30" fill="#e2ded0" stroke="#cdd8bd" stroke-width="3"/>
+<circle cx="860" cy="1238" r="46" fill="#d3e3ba" stroke="#e5e1d4" stroke-width="7"/>
+<rect x="896" y="332" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1145" y="334" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1307" y="382" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1619" y="389" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1784" y="388" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1699" y="683" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1753" y="766" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1974" y="701" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1392" y="894" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="2069" y="431" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1625" y="586" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1911" y="1053" width="150" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="240" y="607" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="280" y="685" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="414" y="609" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="418" y="699" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="574" y="651" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="553" y="883" width="120" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1817" y="601" width="112" height="64" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="728" y="927" width="144" height="66" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1597" y="872" width="146" height="76" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="991" y="1072" width="162" height="78" rx="12" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1186" y="1056" width="150" height="60" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="388" y="771" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="371" y="879" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="519" y="962" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="705" y="615" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="863" y="649" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="903" y="728" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="870" y="808" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="886" y="883" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="754" y="970" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="600" y="1030" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1223" y="891" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="894" y="951" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="743" y="1046" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="647" y="1118" width="118" height="56" rx="6" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="548" y="686" width="300" height="136" rx="12" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="1330" y="196" width="470" height="54" rx="8" fill="#f3efe5" stroke="#d6d0c0" stroke-width="1.8"/>
+<rect x="40" y="300" width="2500" height="1158" rx="26" fill="none" stroke="#c7c1af" stroke-width="7"/>
+<rect x="833" y="1436" width="54" height="26" rx="6" fill="#a4b391"/>
+<rect x="205" y="1436" width="54" height="26" rx="6" fill="#a4b391"/>
+<rect x="1723" y="1436" width="54" height="26" rx="6" fill="#a4b391"/>
+<text x="971.0" y="368.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শহীদ হবিবুর রহমান হল</text>
+<text x="1220.0" y="370.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শহীদ জিয়াউর রহমান হল</text>
+<text x="1382.0" y="418.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">মাদার বখশ হল</text>
+<text x="1694.0" y="425.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শহীদ সোহরাওয়ার্দী হল</text>
+<text x="1859.0" y="424.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শহীদ শামসুজ্জোহা হল</text>
+<text x="1774.0" y="719.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">নওয়াব আব্দুল লতিফ হল</text>
+<text x="1828.0" y="802.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শাহ মখদুম হল</text>
+<text x="2049.0" y="737.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">সৈয়দ আমীর আলী হল</text>
+<text x="1467.0" y="930.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">মতিহার হল</text>
+<text x="2144.0" y="467.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">বরেন্দ্র হল</text>
+<text x="1700.0" y="622.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">রহিম হল</text>
+<text x="1986.0" y="1089.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">শেরে-বাংলা হল</text>
+<text x="300.0" y="639.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">বঙ্গমাতা শেখ ফজিলাতুন্নেছা হল</text>
+<text x="340.0" y="717.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">বেগম রোকেয়া হল</text>
+<text x="474.0" y="641.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">নূরজাহান হল</text>
+<text x="478.0" y="731.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">মন্নুজান হল</text>
+<text x="634.0" y="683.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">চন্দ্রিমা হল</text>
+<text x="613.0" y="915.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">রহমতুন্নেসা হল</text>
+<text x="1873.0" y="637.375" font-size="12.5" font-weight="600" fill="#3d4a37" text-anchor="middle">জিমনেশিয়াম</text>
+<text x="800.0" y="964.9" font-size="14" font-weight="600" fill="#3d4a37" text-anchor="middle">কেন্দ্রীয় গ্রন্থাগার</text>
+<text x="1670.0" y="914.725" font-size="13.5" font-weight="600" fill="#3d4a37" text-anchor="middle">মেডিকেল সেন্টার</text>
+<text x="1072.0" y="1115.9" font-size="14" font-weight="600" fill="#3d4a37" text-anchor="middle">কেন্দ্রীয় জামে মসজিদ</text>
+<g><path d="M860,1400 C845,1385 843,1365 860,1365 C877,1365 875,1385 860,1400 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="860" cy="1375" r="5.6" fill="#fff"/></g>
+<g><path d="M232,1392 C217,1377 215,1357 232,1357 C249,1357 247,1377 232,1392 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="232" cy="1367" r="5.6" fill="#fff"/></g>
+<g><path d="M1750,1392 C1735,1377 1733,1357 1750,1357 C1767,1357 1765,1377 1750,1392 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1750" cy="1367" r="5.6" fill="#fff"/></g>
+<g><path d="M698,813 C683,798 681,778 698,778 C715,778 713,798 698,813 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="698" cy="788" r="5.6" fill="#fff"/></g>
+<g><path d="M800,960 C785,945 783,925 800,925 C817,925 815,945 800,960 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="800" cy="935" r="5.6" fill="#fff"/></g>
+<g><path d="M1130,960 C1115,945 1113,925 1130,925 C1147,925 1145,945 1130,960 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1130" cy="935" r="5.6" fill="#fff"/></g>
+<g><path d="M1261,1086 C1246,1071 1244,1051 1261,1051 C1278,1051 1276,1071 1261,1086 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1261" cy="1061" r="5.6" fill="#fff"/></g>
+<g><path d="M1288,733 C1273,718 1271,698 1288,698 C1305,698 1303,718 1288,733 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1288" cy="708" r="5.6" fill="#fff"/></g>
+<g><path d="M1072,1111 C1057,1096 1055,1076 1072,1076 C1089,1076 1087,1096 1072,1111 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1072" cy="1086" r="5.6" fill="#fff"/></g>
+<g><path d="M1560,265 C1545,250 1543,230 1560,230 C1577,230 1575,250 1560,265 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1560" cy="240" r="5.6" fill="#fff"/></g>
+<g><path d="M2000,470 C1985,455 1983,435 2000,435 C2017,435 2015,455 2000,470 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="2000" cy="445" r="5.6" fill="#fff"/></g>
+<g><path d="M500,1140 C485,1125 483,1105 500,1105 C517,1105 515,1125 500,1140 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="500" cy="1115" r="5.6" fill="#fff"/></g>
+<g><path d="M1045,900 C1030,885 1028,865 1045,865 C1062,865 1060,885 1045,900 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1045" cy="875" r="5.6" fill="#fff"/></g>
+<g><path d="M1670,910 C1655,895 1653,875 1670,875 C1687,875 1685,895 1670,910 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1670" cy="885" r="5.6" fill="#fff"/></g>
+<g><path d="M1594,795 C1579,780 1577,760 1594,760 C1611,760 1609,780 1594,795 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1594" cy="770" r="5.6" fill="#fff"/></g>
+<g><path d="M400,1035 C385,1020 383,1000 400,1000 C417,1000 415,1020 400,1035 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="400" cy="1010" r="5.6" fill="#fff"/></g>
+<g><path d="M1500,1700 C1485,1685 1483,1665 1500,1665 C1517,1665 1515,1685 1500,1700 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1500" cy="1675" r="5.6" fill="#fff"/></g>
+<g><path d="M1528,1360 C1513,1345 1511,1325 1528,1325 C1545,1325 1543,1345 1528,1360 Z" fill="#e0563c" stroke="#fff" stroke-width="3"/><circle cx="1528" cy="1335" r="5.6" fill="#fff"/></g>
+<text x="860" y="1430" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">প্রধান ফটক</text>
+<text x="232" y="1422" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">কাজলা গেট</text>
+<text x="1750" y="1422" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">বিনোদপুর গেট</text>
+<text x="698" y="843" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">প্রশাসন ভবন-১</text>
+<text x="800" y="990" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">কেন্দ্রীয় গ্রন্থাগার</text>
+<text x="1130" y="990" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">কেন্দ্রীয় শহীদ মিনার</text>
+<text x="1261" y="1116" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">শহীদ স্মৃতি সংগ্রহশালা</text>
+<text x="1288" y="763" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">স্টেডিয়াম</text>
+<text x="1072" y="1141" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">কেন্দ্রীয় জামে মসজিদ</text>
+<text x="1560" y="295" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">রাজশাহী বিশ্ববিদ্যালয় স্টেশন</text>
+<text x="2000" y="500" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">বধ্যভূমি স্মৃতিস্তম্ভ</text>
+<text x="500" y="1170" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">প্যারিস রোড</text>
+<text x="1045" y="930" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">মুক্তমঞ্চ</text>
+<text x="1670" y="940" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">মেডিকেল সেন্টার</text>
+<text x="1594" y="825" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">সুইমিং পুল</text>
+<text x="400" y="1065" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">ইবলিশ চত্বর</text>
+<text x="1500" y="1730" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">রাবি বাস স্ট্যান্ড</text>
+<text x="1528" y="1390" font-size="17" font-weight="700" fill="#2d3c2a" text-anchor="middle" stroke="#ffffff" stroke-width="5" paint-order="stroke">খাবারের গলি</text>
+<g filter="url(#sh)"><rect x="60" y="40" width="700" height="150" rx="18" fill="#fdf8ec"/></g>
+<text x="98" y="128" font-size="40" font-weight="800" fill="#2d3c2a">রাজশাহী বিশ্ববিদ্যালয়</text>
+<text x="98" y="164" font-size="19" font-weight="600" fill="#6b7358">ক্যাম্পাস ম্যাপ · ৭৫৩ একর · স্থানাঙ্ক অনুযায়ী বসানো</text>
+<text x="98" y="192" font-size="16" fill="#8a8f7a">OpenStreetMap · 88.622–88.660 E, 24.360–24.378 N</text>
+<g transform="translate(2430,1010)"><circle r="46" fill="#fdf8ec" opacity="0.95"/><path d="M0,-32 L12,10 L0,2 L-12,10 Z" fill="#e0563c"/><text y="30" font-size="17" font-weight="700" text-anchor="middle" fill="#3d4a37">উত্তর</text></g>
+<g transform="translate(126,1580)"><rect x="-14" y="-40" width="300" height="62" rx="10" fill="#fdf8ec" opacity="0.96"/><rect width="200" height="8" fill="#3d4a37"/><rect x="100" width="100" height="8" fill="#fff" stroke="#3d4a37"/><text y="-10" font-size="15" font-weight="600" fill="#3d4a37">০</text><text x="200" y="-10" font-size="15" font-weight="600" fill="#3d4a37" text-anchor="end">প্রায় ৫০০ মিটার</text></g>
+</svg>
